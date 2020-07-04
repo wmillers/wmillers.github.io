@@ -1,0 +1,438 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Wed, 01 Jul 2020 05:38:20 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
+&lt;p>content from &lt;a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">Github Help&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="generating-a-new-ssh-key">Generating a new SSH key&lt;/h1>
+&lt;ol>
+&lt;li>Open Git Bash.&lt;/li>
+&lt;li>Paste the text below, substituting in your GitHub email address.&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ssh-keygen -t rsa -b &lt;span style="color:#ae81ff">4096&lt;/span> -C &lt;span style="color:#e6db74">&amp;#34;your_email@example.com&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This creates a new ssh key, using the provided email as a label.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&amp;gt; Generating public/private rsa key pair.
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>When you&amp;rsquo;re prompted to &amp;ldquo;Enter a file in which to save the key,&amp;rdquo; press Enter. This accepts the default file location.&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&amp;gt; Enter a file in which to save the key &lt;span style="color:#f92672">(&lt;/span>/c/Users/you/.ssh/id_rsa&lt;span style="color:#f92672">)&lt;/span>:&lt;span style="color:#f92672">[&lt;/span>Press enter&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>At the prompt, type a secure passphrase. For more information, see &amp;ldquo;Working with SSH key passphrases&amp;rdquo;.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&amp;gt; Enter passphrase &lt;span style="color:#f92672">(&lt;/span>empty &lt;span style="color:#66d9ef">for&lt;/span> no passphrase&lt;span style="color:#f92672">)&lt;/span>: &lt;span style="color:#f92672">[&lt;/span>Type a passphrase&lt;span style="color:#f92672">]&lt;/span>
+&amp;gt; Enter same passphrase again: &lt;span style="color:#f92672">[&lt;/span>Type passphrase again&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="adding-your-ssh-key-to-the-ssh-agent">Adding your SSH key to the ssh-agent&lt;/h1>
+&lt;p>Before adding a new SSH key to the ssh-agent to manage your keys, you should have checked for existing SSH keys and generated a new SSH key.&lt;/p>
+&lt;p>If you have GitHub Desktop installed, you can use it to clone repositories and not deal with SSH keys. It also comes with the Git Bash tool, which is the preferred way of running git commands on Windows.&lt;/p>
+&lt;ol>
+&lt;li>Ensure the ssh-agent is running:&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>If you are using the Git Shell that&amp;rsquo;s installed with GitHub Desktop, the ssh-agent should be running.&lt;/li>
+&lt;li>If you are using another terminal prompt, such as Git for Windows, you can use the &amp;ldquo;Auto-launching the ssh-agent&amp;rdquo; instructions in &amp;ldquo;Working with SSH key passphrases&amp;rdquo;, or start it manually:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># start the ssh-agent in the background&lt;/span>
+$ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="color:#66d9ef">)&lt;/span>
+&amp;gt; Agent pid &lt;span style="color:#ae81ff">59566&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing key that has a different name, replace id_rsa in the command with the name of your private key file.&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ssh-add ~/.ssh/id_rsa
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="add-the-ssh-key-to-your-github-account">Add the SSH key to your GitHub account&lt;/h1>
+&lt;ol>
+&lt;li>Copy the SSH key to your clipboard.&lt;/li>
+&lt;/ol>
+&lt;p>If your SSH key file has a different name than the example code, modify the filename to match your current setup. When copying your key, don&amp;rsquo;t add any newlines or whitespace.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ clip &amp;lt; ~/.ssh/id_rsa.pub
+&lt;span style="color:#75715e"># Copies the contents of the id_rsa.pub file to your clipboard&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;strong>Tip&lt;/strong>: If clip isn&amp;rsquo;t working, you can locate the hidden .ssh folder, open the file in your favorite text editor, and copy it to your clipboard.&lt;/p>
+&lt;/blockquote>
+&lt;ol start="2">
+&lt;li>
+&lt;p>In the upper-right corner of any page, click your profile photo, then click &lt;strong>Settings&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the user settings sidebar, click &lt;strong>SSH and GPG keys&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Click &lt;strong>New SSH key&lt;/strong> or &lt;strong>Add SSH key&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the &amp;ldquo;Title&amp;rdquo; field, add a descriptive label for the new key. For example, if you&amp;rsquo;re using a personal Mac, you might call this key &amp;ldquo;Personal MacBook Air&amp;rdquo;.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Paste your key into the &amp;ldquo;Key&amp;rdquo; field.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Click &lt;strong>Add SSH key&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If prompted, confirm your GitHub password.&lt;/p>
+&lt;/li>
+&lt;/ol>
+- //wmillers.github.io/document/github-ssh-git-push/ - wmillers</description></item><item><title>Markdown 语法速成</title><link>//wmillers.github.io/document/markdown-cheetsheet/</link><pubDate>Wed, 01 Jul 2020 04:50:05 +0800</pubDate><guid>//wmillers.github.io/document/markdown-cheetsheet/</guid><description>源 //wmillers.github.io/document/markdown-cheetsheet/ -&lt;blockquote>
+&lt;p>This document is originated from &lt;a href="https://www.markdownguide.org/cheat-sheet/">markdownguide&lt;/a>, converted from html to markdown by &lt;a href="https://products.aspose.app/html/conversion/html-to-md">aspose&lt;/a>, and fix format by myself.&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;a href="https://www.markdownguide.org/getting-started/">Get Started&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org/cheat-sheet/">Cheat Sheet&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org/basic-syntax/">Basic Syntax&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org/extended-syntax/">Extended Syntax&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org/tools/">Tools&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org/book/">Book&lt;/a>&lt;/p>
+&lt;h1 id="markdown-cheat-sheet">Markdown Cheat Sheet&lt;/h1>
+&lt;p>A quick reference to the Markdown syntax.&lt;/p>
+&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>This Markdown cheat sheet provides a quick overview of all the Markdown syntax elements. It can’t cover every edge case, so if you need more information about any of these elements, refer to our reference guides for &lt;a href="//wmillers.github.io/basic-syntax">basic syntax&lt;/a> and &lt;a href="//wmillers.github.io/extended-syntax">extended syntax&lt;/a>.&lt;/p>
+&lt;h2 id="basic-syntax">Basic Syntax&lt;/h2>
+&lt;p>These are the elements outlined in John Gruber’s original design document. All Markdown applications support these elements.&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Element&lt;/th>
+&lt;th>Markdown Syntax&lt;/th>
+&lt;th>Render&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#headings">Heading&lt;/a>&lt;/td>
+&lt;td># H1&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>## H2&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>### H3&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#bold">Bold&lt;/a>&lt;/td>
+&lt;td>&lt;code>**bold text**&lt;/code>&lt;/td>
+&lt;td>&lt;strong>bold text&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#italic">Italic&lt;/a>&lt;/td>
+&lt;td>&lt;code>*italicized text*&lt;/code>&lt;/td>
+&lt;td>&lt;em>italicized text&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#blockquotes-1">Blockquote&lt;/a>&lt;/td>
+&lt;td>&amp;gt; blockquote&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#ordered-lists">Ordered List&lt;/a>&lt;/td>
+&lt;td>1. First item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>1. Second item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>1. Third item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#unordered-lists">Unordered List&lt;/a>&lt;/td>
+&lt;td>- First item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>- Second item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>- Third item&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#code">Code&lt;/a>&lt;/td>
+&lt;td>` code `&lt;/td>
+&lt;td>&lt;code>code&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#horizontal-rules">Horizontal Rule&lt;/a>&lt;/td>
+&lt;td>&lt;code>---&lt;/code>&lt;/td>
+&lt;td>&amp;mdash;&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#links">Link&lt;/a>&lt;/td>
+&lt;td>&lt;code>[title](https://www.example.com)&lt;/code>&lt;/td>
+&lt;td>&lt;a href="https://www.example.com">title&lt;/a>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#images-1">Image&lt;/a>&lt;/td>
+&lt;td>&lt;code>![alt text](image.jpg)&lt;/code>&lt;/td>
+&lt;td>&lt;img src="image.jpg" alt="alt text">&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="extended-syntax">Extended Syntax&lt;/h2>
+&lt;p>These elements extend the basic syntax by adding additional features. Not all Markdown applications support these elements.&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Element&lt;/th>
+&lt;th>Markdown Syntax&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#tables">Table&lt;/a>&lt;/td>
+&lt;td>| Syntax | Description |&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>| &amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash; | &amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash; |&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>| Header | Title |&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>| Paragraph | Text |&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#fenced-code-blocks">Fenced Code Block&lt;/a>&lt;/td>
+&lt;td>` ` `&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>{&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>  &amp;ldquo;firstName&amp;rdquo;: &amp;ldquo;John&amp;rdquo;,&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>  &amp;ldquo;lastName&amp;rdquo;: &amp;ldquo;Smith&amp;rdquo;,&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>  &amp;ldquo;age&amp;rdquo;: 25&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>}&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>` ` `&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#footnotes">Footnote&lt;/a>&lt;/td>
+&lt;td>Here&amp;rsquo;s a sentence with a footnote. [^1]&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>[^1]: This is the footnote.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#heading-ids">Heading ID&lt;/a>&lt;/td>
+&lt;td>### My Great Heading {#custom-id}&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#definition-lists">Definition List&lt;/a>&lt;/td>
+&lt;td>term&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>: definition&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#strikethrough">Strikethrough&lt;/a>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#task-lists">Task List&lt;/a>&lt;/td>
+&lt;td>- [x] Write the press release&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>- [ ] Update the website&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>- [ ] Contact the media&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+- //wmillers.github.io/document/markdown-cheetsheet/ - wmillers</description></item><item><title>Hugo 文章前置标签语法</title><link>//wmillers.github.io/document/front-matter-of-hugo/</link><pubDate>Tue, 30 Jun 2020 20:22:24 +0800</pubDate><guid>//wmillers.github.io/document/front-matter-of-hugo/</guid><description>源 //wmillers.github.io/document/front-matter-of-hugo/ -&lt;blockquote>
+&lt;p>An copy of &lt;a href="https://gohugo.io/content-management/front-matter/">Hugo Front Matter Document&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>Hugo supports four formats for front matter, each with their own identifying tokens.&lt;/p>
+&lt;h3 id="toml">TOML&lt;/h3>
+&lt;p>identified by opening and closing +++.&lt;/p>
+&lt;h3 id="yaml">YAML&lt;/h3>
+&lt;p>identified by opening and closing &amp;mdash;.&lt;/p>
+&lt;h3 id="json">JSON&lt;/h3>
+&lt;p>a single JSON object surrounded by ‘{’ and ‘}’, followed by a new line.&lt;/p>
+&lt;h3 id="org">ORG&lt;/h3>
+&lt;p>a group of Org mode keywords in the format ‘#+KEY: VALUE’. Any line that does not start with #+ ends the front matter section. Keyword values can be either strings (#+KEY: VALUE) or a whitespace separated list of strings (#+KEY[]: VALUE_1 VALUE_2).&lt;/p>
+&lt;p>&lt;em>In Hugo I just use YAML as my markdown files&amp;rsquo; front matter&lt;/em>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">categories&lt;/span>:
+- Development
+- VIM
+&lt;span style="color:#66d9ef">date&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2012-04-06&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">description&lt;/span>: spf13-vim is a cross platform distribution of vim plugins and resources
+for Vim.
+&lt;span style="color:#66d9ef">slug&lt;/span>: spf13-vim&lt;span style="color:#ae81ff">-3-0&lt;/span>-release-and-new-website
+&lt;span style="color:#66d9ef">tags&lt;/span>:
+- .vimrc
+- plugins
+- spf13-vim
+- vim
+&lt;span style="color:#66d9ef">title&lt;/span>: spf13-vim &lt;span style="color:#ae81ff">3.0&lt;/span> release and new website
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="front-matter-variableshttpsgohugoiocontent-managementfront-matterfront-matter-variables">&lt;a href="https://gohugo.io/content-management/front-matter/#front-matter-variables">Front Matter Variables&lt;/a>&lt;/h1>
+&lt;h2 id="predefined">&lt;strong>Predefined&lt;/strong>&lt;/h2>
+&lt;p>There are a few predefined variables that Hugo is aware of. See &lt;a href="https://gohugo.io/variables/page/">Page Variables&lt;/a> for how to call many of these predefined variables in your templates.&lt;/p>
+&lt;h3 id="aliases">aliases&lt;/h3>
+&lt;p>an array of one or more aliases (e.g., old published paths of renamed content) that will be created in the output directory structure . See &lt;a href="https://gohugo.io/content-management/urls/#aliases">Aliases&lt;/a> for details.&lt;/p>
+&lt;h3 id="audio">audio&lt;/h3>
+&lt;p>an array of paths to audio files related to the page; used by the &lt;code>opengraph&lt;/code> &lt;a href="https://gohugo.io/templates/internal">internal template&lt;/a> to populate &lt;code>og:audio&lt;/code>.&lt;/p>
+&lt;h3 id="cascade">cascade&lt;/h3>
+&lt;p>a map of Front Matter keys whose values are passed down to the page’s descendents unless overwritten by self or a closer ancestor’s cascade. See &lt;a href="#front-matter-cascadehttpsgohugoiocontent-managementfront-matterfront-matter-cascade">Front Matter Cascade&lt;/a> for details.&lt;/p>
+&lt;h3 id="date">date&lt;/h3>
+&lt;p>the datetime assigned to this page. This is usually fetched from the date field in front matter, but this behaviour is configurable.&lt;/p>
+&lt;h3 id="description">description&lt;/h3>
+&lt;p>the description for the content.&lt;/p>
+&lt;h3 id="draft">draft&lt;/h3>
+&lt;p>if true, the content will not be rendered unless the &lt;code>--buildDrafts&lt;/code> flag is passed to the hugo command.&lt;/p>
+&lt;h3 id="expirydate">expiryDate&lt;/h3>
+&lt;p>the datetime at which the content should no longer be published by Hugo; expired content will not be rendered unless the &lt;code>--buildExpired&lt;/code> flag is passed to the hugo command.&lt;/p>
+&lt;h3 id="headless">headless&lt;/h3>
+&lt;p>if true, sets a leaf bundle to be &lt;a href="https://gohugo.io/content-management/page-bundles/#headless-bundle">headless&lt;/a>.&lt;/p>
+&lt;h3 id="images">images&lt;/h3>
+&lt;p>an array of paths to images related to the page; used by &lt;a href="https://gohugo.io/templates/internal">internal templates&lt;/a> such as &lt;code>_internal/twitter_cards.html&lt;/code>.&lt;/p>
+&lt;h3 id="iscjklanguage">isCJKLanguage&lt;/h3>
+&lt;p>if true, Hugo will explicitly treat the content as a CJK language; both &lt;code>.Summary&lt;/code> and &lt;code>.WordCount&lt;/code> work properly in CJK languages.&lt;/p>
+&lt;h3 id="keywords">keywords&lt;/h3>
+&lt;p>the meta keywords for the content.&lt;/p>
+&lt;h3 id="layout">layout&lt;/h3>
+&lt;p>the layout Hugo should select from the &lt;a href="https://gohugo.io/templates/lookup-order/">lookup order&lt;/a> when rendering the content. If a &lt;code>type&lt;/code> is not specified in the front matter, Hugo will look for the layout of the same name in the layout directory that corresponds with a content’s section. See &lt;a href="https://gohugo.io/content-management/types/#defining-a-content-type">“Defining a Content Type”&lt;/a>&lt;/p>
+&lt;h3 id="lastmod">lastmod&lt;/h3>
+&lt;p>the datetime at which the content was last modified.&lt;/p>
+&lt;h3 id="linktitle">linkTitle&lt;/h3>
+&lt;p>used for creating links to content; if set, Hugo defaults to using the &lt;code>linktitle&lt;/code> before the &lt;code>title&lt;/code>. Hugo can also &lt;a href="https://gohugo.io/templates/lists/#by-link-title">order lists of content by &lt;code>linktitle&lt;/code>&lt;/a>.&lt;/p>
+&lt;h3 id="markup">markup&lt;/h3>
+&lt;p>experimental; specify &lt;code>&amp;quot;rst&amp;quot;&lt;/code> for reStructuredText (requires &lt;code>rst2html&lt;/code>) or &lt;code>&amp;quot;md&amp;quot;&lt;/code> (default) for Markdown.&lt;/p>
+&lt;h3 id="outputs">outputs&lt;/h3>
+&lt;p>allows you to specify output formats specific to the content. See &lt;a href="https://gohugo.io/templates/output-formats/">output formats&lt;/a>.&lt;/p>
+&lt;h3 id="publishdate">publishDate&lt;/h3>
+&lt;p>if in the future, content will not be rendered unless the &lt;code>--buildFuture&lt;/code> flag is passed to &lt;code>hugo&lt;/code>.&lt;/p>
+&lt;h3 id="resources">resources&lt;/h3>
+&lt;p>used for configuring page bundle resources. See &lt;a href="https://gohugo.io/content-management/page-resources/">Page Resources&lt;/a>.&lt;/p>
+&lt;h3 id="series">series&lt;/h3>
+&lt;p>an array of series this page belongs to, as a subset of the &lt;code>series&lt;/code> &lt;a href="https://gohugo.io/content-management/taxonomies/">taxonomy&lt;/a>; used by the &lt;code>opengraph&lt;/code> &lt;a href="https://gohugo.io/templates/internal">internal template&lt;/a> to populate &lt;code>og:see_also&lt;/code>.&lt;/p>
+&lt;h3 id="slug">slug&lt;/h3>
+&lt;p>appears as the tail of the output URL. A value specified in front matter will override the segment of the URL based on the filename.&lt;/p>
+&lt;h3 id="summary">summary&lt;/h3>
+&lt;p>text used when providing a summary of the article in the &lt;code>.Summary&lt;/code> page variable; details available in the &lt;a href="https://gohugo.io/content-management/summaries/">content-summaries&lt;/a> section.&lt;/p>
+&lt;h3 id="title">title&lt;/h3>
+&lt;p>the title for the content.&lt;/p>
+&lt;h3 id="type">type&lt;/h3>
+&lt;p>the type of the content; this value will be automatically derived from the directory (i.e., the &lt;a href="https://gohugo.io/content-management/sections/">section&lt;/a>) if not specified in front matter.&lt;/p>
+&lt;h3 id="url">url&lt;/h3>
+&lt;p>the full path to the content from the web root. It makes no assumptions about the path of the content file. It also ignores any language prefixes of the multilingual feature.&lt;/p>
+&lt;h3 id="videos">videos&lt;/h3>
+&lt;p>an array of paths to videos related to the page; used by the &lt;code>opengraph&lt;/code> &lt;a href="https://gohugo.io/templates/internal">internal template&lt;/a> to populate &lt;code>og:video&lt;/code>.&lt;/p>
+&lt;h3 id="weight">weight&lt;/h3>
+&lt;p>used for &lt;a href="https://gohugo.io/templates/lists/">ordering your content in lists&lt;/a>. Lower weight gets higher precedence. So content with lower weight will come first. If set, weights should be non-zero, as 0 is interpreted as an unset weight.&lt;/p>
+&lt;h3 id="taxonomies">&amp;lt;taxonomies&amp;gt;&lt;/h3>
+&lt;p>field name of the plural form of the index. See &lt;code>tags&lt;/code> and &lt;code>categories&lt;/code> in the above front matter examples. Note that the plural form of user-defined taxonomies cannot be the same as any of the predefined front matter variables.&lt;/p>
+&lt;blockquote>
+&lt;p>If neither &lt;code>slug&lt;/code> nor &lt;code>url&lt;/code> is present and &lt;a href="https://gohugo.io/content-management/urls/#permalinks">permalinks are not configured otherwise in your site config file&lt;/a>, Hugo will use the filename of your content to create the output URL. See &lt;a href="https://gohugo.io/content-management/organization">Content Organization&lt;/a> for an explanation of paths in Hugo and &lt;a href="https://gohugo.io/content-management/urls/">URL Management&lt;/a> for ways to customize Hugo’s default behaviors.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="user-defined">&lt;strong>User-Defined&lt;/strong>&lt;/h2>
+&lt;p>You can add fields to your front matter arbitrarily to meet your needs. These user-defined key-values are placed into a single &lt;code>.Params&lt;/code> variable for use in your templates.&lt;/p>
+&lt;p>The following fields can be accessed via &lt;code>.Params.include_toc&lt;/code> and &lt;code>.Params.show_comments&lt;/code>, respectively. The &lt;a href="https://gohugo.io/variables/">Variables&lt;/a> section provides more information on using Hugo’s page- and site-level variables in your templates.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-YAML" data-lang="YAML">&lt;span style="color:#66d9ef">include_toc&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#66d9ef">show_comments&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="front-matter-cascadehttpsgohugoiocontent-managementfront-matterfront-matter-cascade">&lt;a href="https://gohugo.io/content-management/front-matter/#front-matter-cascade">Front Matter Cascade&lt;/a>&lt;/h1>
+&lt;p>Any node or section can pass down to descendents a set of Front Matter values as long as defined underneath the reserved cascade Front Matter key.&lt;/p>
+&lt;p>&lt;strong>Example&lt;/strong>
+In &lt;code>content/blog/_index.md&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-YAML" data-lang="YAML">&lt;span style="color:#66d9ef">cascade&lt;/span>:
+&lt;span style="color:#66d9ef">banner&lt;/span>: images/typewriter.jpg
+&lt;span style="color:#66d9ef">title&lt;/span>: Blog
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>With the above example the Blog section page and its descendents will return &lt;code>images/typewriter.jpg&lt;/code> when &lt;code>.Params.banner&lt;/code> is invoked unless:&lt;/p>
+&lt;ul>
+&lt;li>Said descendent has its own &lt;code>banner&lt;/code> value set&lt;/li>
+&lt;li>Or a closer ancestor node has its own &lt;code>cascade.banner&lt;/code> value set.&lt;/li>
+&lt;/ul>
+&lt;h2 id="click-herehttpsgohugoiocontent-managementfront-matterorder-content-through-front-matter-content-above-is-enough-to-continue-read-on-original-page">&lt;strong>&lt;a href="https://gohugo.io/content-management/front-matter/#order-content-through-front-matter" title="content above is enough">click here&lt;/a> to continue read on original page&lt;/strong>&lt;/h2>
+&lt;p>Order Content Through Front Matter&lt;br>
+Override Global Markdown Configuration&lt;br>
+Front Matter Format Specs&lt;br>
+See Also&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://gohugo.io/content-management/archetypes/">Archetypes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gohugo.io/templates/data-templates/">Data Templates&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gohugo.io/getting-started/code-toggle/">Code Toggle&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gohugo.io/getting-started/configuration/">Configure Hugo&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gohugo.io/content-management/taxonomies/">Taxonomies&lt;/a>&lt;/li>
+&lt;/ul>
+- //wmillers.github.io/document/front-matter-of-hugo/ - wmillers</description></item><item><title>Universal Post Title</title><link>//wmillers.github.io/posts/my-first-post/</link><pubDate>Tue, 30 Jun 2020 07:43:07 +0800</pubDate><guid>//wmillers.github.io/posts/my-first-post/</guid><description>源 //wmillers.github.io/posts/my-first-post/ -&lt;blockquote>
+&lt;p>&lt;code>Used for test&lt;/code>&lt;br>
+&lt;strong>May contains bugs&lt;/strong>&lt;br>
+about&lt;/p>
+&lt;/blockquote>
+&lt;p>1️⃣😄&lt;br>
+&lt;a href="https://www.webfx.com/tools/emoji-cheat-sheet/">Emoji Cheetsheet&lt;/a>&lt;/p>
+&lt;p>When $a \ne 0$, there are two solutions to (ax^2 + bx + c = 0) and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$&lt;/p>
+&lt;h1 id="internal-params-like-summary-will-cause-summary-error">&lt;strong>Internal params&lt;/strong> (like .Summary) WILL CAUSE SUMMARY ERROR&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#a6e22e">A&lt;/span> &lt;span style="color:#a6e22e">bunch&lt;/span> &lt;span style="color:#a6e22e">of&lt;/span> &lt;span style="color:#a6e22e">code&lt;/span> &lt;span style="color:#a6e22e">here&lt;/span> &lt;/code>&lt;/pre>&lt;/div>
+&lt;p>render of &lt;strong>`code`&lt;/strong> bug: ` code `&lt;/p>
+&lt;pre>&lt;code>render of **\`code\`** bug: \` code \`
+&lt;/code>&lt;/pre>&lt;h2 id="usage">Usage&lt;/h2>
+&lt;ul>
+&lt;li>&lt;strong>tags&lt;/strong>
+&lt;ul>
+&lt;li>git&lt;/li>
+&lt;li>github&lt;/li>
+&lt;li>ssh&lt;/li>
+&lt;li>markdown&lt;/li>
+&lt;li>cheetsheet&lt;/li>
+&lt;li>tutorial&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>categories&lt;/strong>
+&lt;ul>
+&lt;li>test&lt;/li>
+&lt;li>archive&lt;/li>
+&lt;li>undone&lt;/li>
+&lt;li>finished&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>section&lt;/strong> basic type of an post, shows usage of a post, like:
+&lt;ul>
+&lt;li>&lt;code>document&lt;/code> collect of documents&lt;/li>
+&lt;li>&lt;code>posts&lt;/code> default section&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>flow
+st=&amp;gt;start: Start
+op=&amp;gt;operation: Your Operation
+cond=&amp;gt;condition: Yes or No?
+e=&amp;gt;end
+st-&amp;gt;op-&amp;gt;cond
+cond(yes)-&amp;gt;e
+cond(no)-&amp;gt;op
+This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
+2020-07-01    
+This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
+2020-07-01    
+This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
+2020-07-01    
+This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
+2020-07-01    &lt;/p>
+- //wmillers.github.io/posts/my-first-post/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t/</guid><description>源 //wmillers.github.io/test/t/ -- //wmillers.github.io/test/t/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t10979/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t10979/</guid><description>源 //wmillers.github.io/test/t10979/ -- //wmillers.github.io/test/t10979/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t11844/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t11844/</guid><description>源 //wmillers.github.io/test/t11844/ -- //wmillers.github.io/test/t11844/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t12403/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t12403/</guid><description>源 //wmillers.github.io/test/t12403/ -- //wmillers.github.io/test/t12403/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t14938/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t14938/</guid><description>源 //wmillers.github.io/test/t14938/ -- //wmillers.github.io/test/t14938/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t15144/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t15144/</guid><description>源 //wmillers.github.io/test/t15144/ -- //wmillers.github.io/test/t15144/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t15677/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t15677/</guid><description>源 //wmillers.github.io/test/t15677/ -- //wmillers.github.io/test/t15677/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t1598/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t1598/</guid><description>源 //wmillers.github.io/test/t1598/ -- //wmillers.github.io/test/t1598/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t1643/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t1643/</guid><description>源 //wmillers.github.io/test/t1643/ -- //wmillers.github.io/test/t1643/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t17479/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t17479/</guid><description>源 //wmillers.github.io/test/t17479/ -- //wmillers.github.io/test/t17479/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t17838/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t17838/</guid><description>源 //wmillers.github.io/test/t17838/ -- //wmillers.github.io/test/t17838/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t1793/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t1793/</guid><description>源 //wmillers.github.io/test/t1793/ -- //wmillers.github.io/test/t1793/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t18153/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t18153/</guid><description>源 //wmillers.github.io/test/t18153/ -- //wmillers.github.io/test/t18153/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t18298/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t18298/</guid><description>源 //wmillers.github.io/test/t18298/ -- //wmillers.github.io/test/t18298/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t18505/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t18505/</guid><description>源 //wmillers.github.io/test/t18505/ -- //wmillers.github.io/test/t18505/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t19277/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t19277/</guid><description>源 //wmillers.github.io/test/t19277/ -- //wmillers.github.io/test/t19277/ - wmillers</description></item></channel></rss>
