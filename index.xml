@@ -66,7 +66,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;p>If prompted, confirm your GitHub password.&lt;/p>
 &lt;/li>
 &lt;/ol>
-- //wmillers.github.io/document/github-ssh-git-push/ - wmillers</description></item><item><title>Markdown 语法速成</title><link>//wmillers.github.io/document/markdown-cheetsheet/</link><pubDate>Wed, 01 Jul 2020 04:50:05 +0800</pubDate><guid>//wmillers.github.io/document/markdown-cheetsheet/</guid><description>源 //wmillers.github.io/document/markdown-cheetsheet/ -&lt;blockquote>
+- //wmillers.github.io/document/github-ssh-git-push/ - wmillers</description></item><item><title>Markdown 语法速成</title><link>//wmillers.github.io/document/markdown-cheatsheet/</link><pubDate>Wed, 01 Jul 2020 04:50:05 +0800</pubDate><guid>//wmillers.github.io/document/markdown-cheatsheet/</guid><description>源 //wmillers.github.io/document/markdown-cheatsheet/ -&lt;blockquote>
 &lt;p>This document is originated from &lt;a href="https://www.markdownguide.org/cheat-sheet/">markdownguide&lt;/a>, converted from html to markdown by &lt;a href="https://products.aspose.app/html/conversion/html-to-md">aspose&lt;/a>, and fix format by myself.&lt;/p>
 &lt;/blockquote>
 &lt;p>&lt;a href="https://www.markdownguide.org/getting-started/">Get Started&lt;/a>&lt;br>
@@ -264,7 +264,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-- //wmillers.github.io/document/markdown-cheetsheet/ - wmillers</description></item><item><title>Hugo 文章前置标签语法</title><link>//wmillers.github.io/document/front-matter-of-hugo/</link><pubDate>Tue, 30 Jun 2020 20:22:24 +0800</pubDate><guid>//wmillers.github.io/document/front-matter-of-hugo/</guid><description>源 //wmillers.github.io/document/front-matter-of-hugo/ -&lt;blockquote>
+- //wmillers.github.io/document/markdown-cheatsheet/ - wmillers</description></item><item><title>Hugo 文章前置标签语法</title><link>//wmillers.github.io/document/front-matter-of-hugo/</link><pubDate>Tue, 30 Jun 2020 20:22:24 +0800</pubDate><guid>//wmillers.github.io/document/front-matter-of-hugo/</guid><description>源 //wmillers.github.io/document/front-matter-of-hugo/ -&lt;blockquote>
 &lt;p>An copy of &lt;a href="https://gohugo.io/content-management/front-matter/">Hugo Front Matter Document&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;p>Hugo supports four formats for front matter, each with their own identifying tokens.&lt;/p>
