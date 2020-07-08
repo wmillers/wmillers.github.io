@@ -71,14 +71,14 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;/blockquote>
 &lt;p>&lt;a href="https://www.markdownguide.org/getting-started/">Get Started&lt;/a>&lt;br>
 &lt;a href="https://www.markdownguide.org/cheat-sheet/">Cheat Sheet&lt;/a>&lt;br>
-&lt;a href="https://www.markdownguide.org/basic-syntax/">Basic Syntax&lt;/a>&lt;br>
-&lt;a href="https://www.markdownguide.org/extended-syntax/">Extended Syntax&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org//www.markdownguide.org/basic-syntax/">Basic Syntax&lt;/a>&lt;br>
+&lt;a href="https://www.markdownguide.org//www.markdownguide.org/extended-syntax/">Extended Syntax&lt;/a>&lt;br>
 &lt;a href="https://www.markdownguide.org/tools/">Tools&lt;/a>&lt;br>
 &lt;a href="https://www.markdownguide.org/book/">Book&lt;/a>&lt;/p>
 &lt;h1 id="markdown-cheat-sheet">Markdown Cheat Sheet&lt;/h1>
 &lt;p>A quick reference to the Markdown syntax.&lt;/p>
 &lt;h2 id="overview">Overview&lt;/h2>
-&lt;p>This Markdown cheat sheet provides a quick overview of all the Markdown syntax elements. It can’t cover every edge case, so if you need more information about any of these elements, refer to our reference guides for &lt;a href="//wmillers.github.io/basic-syntax">basic syntax&lt;/a> and &lt;a href="//wmillers.github.io/extended-syntax">extended syntax&lt;/a>.&lt;/p>
+&lt;p>This Markdown cheat sheet provides a quick overview of all the Markdown syntax elements. It can’t cover every edge case, so if you need more information about any of these elements, refer to our reference guides for &lt;a href="//www.markdownguide.org/basic-syntax">basic syntax&lt;/a> and &lt;a href="//www.markdownguide.org/extended-syntax">extended syntax&lt;/a>.&lt;/p>
 &lt;h2 id="basic-syntax">Basic Syntax&lt;/h2>
 &lt;p>These are the elements outlined in John Gruber’s original design document. All Markdown applications support these elements.&lt;/p>
 &lt;table>
@@ -91,7 +91,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;/thead>
 &lt;tbody>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#headings">Heading&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#headings">Heading&lt;/a>&lt;/td>
 &lt;td># H1&lt;/td>
 &lt;td>&lt;/td>
 &lt;/tr>
@@ -106,22 +106,22 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#bold">Bold&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#bold">Bold&lt;/a>&lt;/td>
 &lt;td>&lt;code>**bold text**&lt;/code>&lt;/td>
 &lt;td>&lt;strong>bold text&lt;/strong>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#italic">Italic&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#italic">Italic&lt;/a>&lt;/td>
 &lt;td>&lt;code>*italicized text*&lt;/code>&lt;/td>
 &lt;td>&lt;em>italicized text&lt;/em>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#blockquotes-1">Blockquote&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#blockquotes-1">Blockquote&lt;/a>&lt;/td>
 &lt;td>&amp;gt; blockquote&lt;/td>
 &lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#ordered-lists">Ordered List&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#ordered-lists">Ordered List&lt;/a>&lt;/td>
 &lt;td>1. First item&lt;/td>
 &lt;td>&lt;/td>
 &lt;/tr>
@@ -136,7 +136,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#unordered-lists">Unordered List&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#unordered-lists">Unordered List&lt;/a>&lt;/td>
 &lt;td>- First item&lt;/td>
 &lt;td>&lt;/td>
 &lt;/tr>
@@ -151,22 +151,22 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#code">Code&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#code">Code&lt;/a>&lt;/td>
 &lt;td>` code `&lt;/td>
 &lt;td>&lt;code>code&lt;/code>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#horizontal-rules">Horizontal Rule&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#horizontal-rules">Horizontal Rule&lt;/a>&lt;/td>
 &lt;td>&lt;code>---&lt;/code>&lt;/td>
 &lt;td>&amp;mdash;&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#links">Link&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#links">Link&lt;/a>&lt;/td>
 &lt;td>&lt;code>[title](https://www.example.com)&lt;/code>&lt;/td>
 &lt;td>&lt;a href="https://www.example.com">title&lt;/a>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/basic-syntax/#images-1">Image&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/basic-syntax/#images-1">Image&lt;/a>&lt;/td>
 &lt;td>&lt;code>![alt text](image.jpg)&lt;/code>&lt;/td>
 &lt;td>&lt;img src="image.jpg" alt="alt text">&lt;/td>
 &lt;/tr>
@@ -183,7 +183,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;/thead>
 &lt;tbody>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#tables">Table&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#tables">Table&lt;/a>&lt;/td>
 &lt;td>| Syntax | Description |&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -199,7 +199,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>| Paragraph | Text |&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#fenced-code-blocks">Fenced Code Block&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#fenced-code-blocks">Fenced Code Block&lt;/a>&lt;/td>
 &lt;td>` ` `&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -227,7 +227,7 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>` ` `&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#footnotes">Footnote&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#footnotes">Footnote&lt;/a>&lt;/td>
 &lt;td>Here&amp;rsquo;s a sentence with a footnote. [^1]&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -235,11 +235,11 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>[^1]: This is the footnote.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#heading-ids">Heading ID&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#heading-ids">Heading ID&lt;/a>&lt;/td>
 &lt;td>### My Great Heading {#custom-id}&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#definition-lists">Definition List&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#definition-lists">Definition List&lt;/a>&lt;/td>
 &lt;td>term&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -247,11 +247,11 @@ $ eval &lt;span style="color:#66d9ef">$(&lt;/span>ssh-agent -s&lt;span style="co
 &lt;td>: definition&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#strikethrough">Strikethrough&lt;/a>&lt;/td>
-&lt;td>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#strikethrough">Strikethrough&lt;/a>&lt;/td>
+&lt;td>&lt;code> ~~The world is flat.~~&lt;/code>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>&lt;a href="//wmillers.github.io/extended-syntax/#task-lists">Task List&lt;/a>&lt;/td>
+&lt;td>&lt;a href="//www.markdownguide.org/extended-syntax/#task-lists">Task List&lt;/a>&lt;/td>
 &lt;td>- [x] Write the press release&lt;/td>
 &lt;/tr>
 &lt;tr>
