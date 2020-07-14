@@ -107,9 +107,10 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;h3 id="change-url-rewrite-settings">Change URL rewrite settings&lt;/h3>
 &lt;ol>
 &lt;li>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;/li>
-&lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another 2 for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
+&lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
 &lt;/ol>
-&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;br>
+The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another web app that hosted on the IIS server) to be rewritten to the &lt;code>rdp&lt;/code> sevice. Also check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -127,21 +128,47 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;td>S4f&lt;/td>
 &lt;td>-&lt;/td>
 &lt;td>match&lt;/td>
-&lt;td>&lt;/td>
+&lt;td>(/?)S4f_(/?)(.*)&lt;/td>
+&lt;td>Rewrite&lt;/td>
+&lt;td>{R:0}&lt;/td>
+&lt;td>True&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ReverseProxyInboundRule1&lt;/td>
 &lt;td>-&lt;/td>
-&lt;td>-&lt;/td>
-&lt;td>-&lt;/td>
+&lt;td>match&lt;/td>
+&lt;td>^http://172.17.111.38:8080/(.*)&lt;/td>
+&lt;td>Rewrite&lt;/td>
+&lt;td>https://192.168.51.24/{R:1}&lt;/td>
+&lt;td>false&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;p>Create an Inbound Rule for the parent website (&lt;code>localhost&lt;/code> in this example) with the following settings:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>pattern&lt;/strong>: rdp(/)?(.*)&lt;/li>
-&lt;li>check the &lt;strong>Ignore case&lt;/strong> checkbox&lt;/li>
-&lt;li>&lt;strong>rewrite&lt;/strong> URL (VM&amp;rsquo;s IP) set to http://172.17.111.38:8080/{R:2}&lt;/li>
-&lt;li>check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/li>
-&lt;li>check the &lt;strong>Stop processing of subsequent rules&lt;/strong> checkbox&lt;/li>
-&lt;/ul>
+&lt;p>&lt;strong>Outbound Rules&lt;/strong>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Name&lt;/th>
+&lt;th>Input&lt;/th>
+&lt;th>Match&lt;/th>
+&lt;th>Pattern&lt;/th>
+&lt;th>Action Type&lt;/th>
+&lt;th>Request&lt;/th>
+&lt;th>Stop Processing&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>ReverseProxyOutboundRule1&lt;/td>
+&lt;td>A, Form, Img, ..&lt;/td>
+&lt;td>match&lt;/td>
+&lt;td>rdp(/?)(.*)&lt;/td>
+&lt;td>Rewrite&lt;/td>
+&lt;td>http://172.17.111.38:8080/{R:2}&lt;/td>
+&lt;td>false&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
 &lt;h1 id="heading">&lt;/h1>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
 &lt;p>content from &lt;a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">Github Help&lt;/a>&lt;/p>
