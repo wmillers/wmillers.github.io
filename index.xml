@@ -1,11 +1,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使用的工具将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要客户端和向局域网开放3389端口。&lt;/p>
-&lt;p>本文搭建的环境和程序如下：
+&lt;p>本文搭建的环境和程序如下&lt;br>
 |Environment|Contains|
 |-|-|
 |Win 10|Hyper-v, IIS Webserver|
 |Hyper-v|Docker(VM Debian10)|
 |Docker|Guacamole|
-按外部访问流程排序
+按外部访问流程排序&lt;br>
 |Program|Usage|Environment|Address|Included|
 |-|-|-|-|-|
 |IIS Webserver|HTTPS auth and port redirect|Win 10|Lan:443/rdp|not included|
@@ -15,8 +15,9 @@
 &lt;blockquote>
 &lt;p>&lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">addtional document&lt;/a>&lt;/p>
 &lt;/blockquote>
-&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>. Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.
-In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.
+&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
+Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
+In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
 &lt;strong>user-mapping.xml&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;user-mapping&amp;gt;&lt;/span>
 &lt;span style="color:#75715e">&amp;lt;!-- Per-user authentication and config information
@@ -64,7 +65,7 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;li>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;/li>
 &lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another 2 for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
 &lt;/ol>
-&lt;p>&lt;strong>Inbound Rules&lt;/strong>
+&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;br>
 |Name|Input|Match|Pattern|Action Type|Request URL|Stop Processing|
 |-|-|-|-|-|-|-|
 |S4f|-|match||-|-|-|&lt;/p>
