@@ -1,19 +1,63 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使用的工具将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要客户端和向局域网开放3389端口。&lt;/p>
-&lt;p>本文搭建的环境和程序如下&lt;br>
-|Environment|Contains|
-|-|-|
-|Win 10|Hyper-v, IIS Webserver|
-|Hyper-v|Docker(VM Debian10)|
-|Docker|Guacamole|
-按外部访问流程排序&lt;br>
-|Program|Usage|Environment|Address|Included|
-|-|-|-|-|-|
-|IIS Webserver|HTTPS auth and port redirect|Win 10|Lan:443/rdp|not included|
-|Guacamole|HTML5 RDP server|Hyper-v|172.17.111.38:8080|-|
-|RDP|Microsoft remote desktop|Hyper-v|127.0.0.1:3389|-|&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;blockquote>
+&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使&lt;code>guacamole&lt;/code>将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要服务端和向局域网开放3389端口。&lt;/p>
+&lt;/blockquote>
+&lt;p>本文搭建的环境和程序如下&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Environment&lt;/th>
+&lt;th>Contains&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Win 10&lt;/td>
+&lt;td>Hyper-v, IIS Webserver&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Hyper-v&lt;/td>
+&lt;td>VM Debian10 (Docker)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Docker&lt;/td>
+&lt;td>Guacamole&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>按外部访问流程排序&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Program&lt;/th>
+&lt;th>Usage&lt;/th>
+&lt;th>Environment&lt;/th>
+&lt;th>Address&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>IIS Webserver&lt;/td>
+&lt;td>HTTPS auth and port redirect&lt;/td>
+&lt;td>Win 10&lt;/td>
+&lt;td>192.168.51.24:443 172.17.111.33 (Hyper-V)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Guacamole&lt;/td>
+&lt;td>HTML5 RDP server&lt;/td>
+&lt;td>Hyper-v&lt;/td>
+&lt;td>172.17.111.38:8080&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RDP&lt;/td>
+&lt;td>Microsoft remote desktop&lt;/td>
+&lt;td>Hyper-v&lt;/td>
+&lt;td>127.0.0.1:3389&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
 &lt;h1 id="prepare-config-file">Prepare config file&lt;/h1>
 &lt;blockquote>
-&lt;p>&lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">addtional document&lt;/a>&lt;/p>
+&lt;p>More offcial Docs &lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">Here&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
 Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
@@ -65,10 +109,31 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;li>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;/li>
 &lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another 2 for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
 &lt;/ol>
-&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;br>
-|Name|Input|Match|Pattern|Action Type|Request URL|Stop Processing|
-|-|-|-|-|-|-|-|
-|S4f|-|match||-|-|-|&lt;/p>
+&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Name&lt;/th>
+&lt;th>Input&lt;/th>
+&lt;th>Match&lt;/th>
+&lt;th>Pattern&lt;/th>
+&lt;th>Action Type&lt;/th>
+&lt;th>Request URL&lt;/th>
+&lt;th>Stop Processing&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>S4f&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>match&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>-&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
 &lt;p>Create an Inbound Rule for the parent website (&lt;code>localhost&lt;/code> in this example) with the following settings:&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>pattern&lt;/strong>: rdp(/)?(.*)&lt;/li>
@@ -472,7 +537,31 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#a6e22e">A&lt;/span> &lt;span style="color:#a6e22e">bunch&lt;/span> &lt;span style="color:#a6e22e">of&lt;/span> &lt;span style="color:#a6e22e">code&lt;/span> &lt;span style="color:#a6e22e">here&lt;/span> &lt;/code>&lt;/pre>&lt;/div>
 &lt;p>render of &lt;strong>`code`&lt;/strong> bug: ` code `&lt;/p>
 &lt;pre>&lt;code>render of **\`code\`** bug: \` code \`
-&lt;/code>&lt;/pre>&lt;h2 id="usage">Usage&lt;/h2>
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>Note that table should inside empty lines&lt;/p>
+&lt;blockquote>
+&lt;/blockquote>
+&lt;p>&amp;lt;Empty&amp;gt;
+|1|2|
+|-|-|
+|fail|-|
+&amp;lt;Empty&amp;gt;&lt;/p>
+&lt;/blockquote>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>1&lt;/th>
+&lt;th>2&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>fail&lt;/td>
+&lt;td>-&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="usage">Usage&lt;/h2>
 &lt;ul>
 &lt;li>&lt;strong>tags&lt;/strong>
 &lt;ul>
