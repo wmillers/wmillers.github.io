@@ -1,10 +1,82 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker Guacamole Rdp</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;blockquote>
-&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使用的工具将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要客户端和开放3389端口。&lt;/p>
-&lt;/blockquote>
-&lt;blockquote>
-&lt;p>client docker file quick config from &lt;a href="https://github.com/oznu/docker-guacamole">https://github.com/oznu/docker-guacamole&lt;/a> &amp;amp; &lt;a href="https://hub.docker.com/r/oznu/guacamole">https://hub.docker.com/r/oznu/guacamole&lt;/a>&lt;/p>
-&lt;/blockquote>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使用的工具将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要客户端和向局域网开放3389端口。&lt;/p>
+&lt;p>本文搭建的环境和程序如下：
+|Environment|Contains|
+|-|-|
+|Win 10|Hyper-v, IIS Webserver|
+|Hyper-v|Docker(VM Debian10)|
+|Docker|Guacamole|
+按外部访问流程排序
+|Program|Usage|Environment|Address|Included|
+|-|-|-|-|-|
+|IIS Webserver|HTTPS auth and port redirect|Win 10|Lan:443/rdp|not included|
+|Guacamole|HTML5 RDP server|Hyper-v|172.17.111.38:8080|-|
+|RDP|Microsoft remote desktop|Hyper-v|127.0.0.1:3389|-|&lt;/p>
 &lt;h1 id="prepare-config-file">Prepare config file&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">addtional document&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>. Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.
+In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.
+&lt;strong>user-mapping.xml&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;user-mapping&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- Per-user authentication and config information
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;authorize username=&amp;#34;USERNAME&amp;#34; password=&amp;#34;PASSWORD&amp;#34;&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;protocol&amp;gt;vnc&amp;lt;/protocol&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;hostname&amp;#34;&amp;gt;localhost&amp;lt;/param&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;port&amp;#34;&amp;gt;5900&amp;lt;/param&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;password&amp;#34;&amp;gt;VNCPASS&amp;lt;/param&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> &amp;lt;/authorize&amp;gt;
+&lt;/span>&lt;span style="color:#75715e"> --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- Another user, but using md5 to hash the password
+&lt;/span>&lt;span style="color:#75715e"> (example below uses the md5 hash of &amp;#34;PASSWORD&amp;#34;) --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;authorize&lt;/span>
+&lt;span style="color:#a6e22e">username=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;admin&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">password=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;**PASSWORD CONVERT TO MD5**&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">encoding=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;md5&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;connection&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Unique Name&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;protocol&amp;gt;&lt;/span>rdp&lt;span style="color:#f92672">&amp;lt;/protocol&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;param&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;hostname&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>172.17.111.33&lt;span style="color:#f92672">&amp;lt;/param&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;param&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;port&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>3389&lt;span style="color:#f92672">&amp;lt;/param&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/connection&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/authorize&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/user-mapping&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;a href="hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;ol>
+&lt;li>Pull image from docker&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker pull oznu/guacamole
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>Run container (replace &lt;code>/root/user-mapping.xml&lt;/code> with your config file)&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 8080:8080 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/user-mapping.xml:/config &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> oznu/guacamole
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="config-url-rewrite">Config URL rewrite&lt;/h1>
+&lt;h2 id="iis-webserver-to-guacamole">IIS Webserver to Guacamole&lt;/h2>
+&lt;h3 id="install-application-request-routing-arr-module">Install Application Request Routing (ARR) module&lt;/h3>
+&lt;p>Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
+&lt;h3 id="change-url-rewrite-settings">Change URL rewrite settings&lt;/h3>
+&lt;ol>
+&lt;li>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;/li>
+&lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another 2 for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>Inbound Rules&lt;/strong>
+|Name|Input|Match|Pattern|Action Type|Request URL|Stop Processing|
+|-|-|-|-|-|-|-|
+|S4f|-|match||-|-|-|&lt;/p>
+&lt;p>Create an Inbound Rule for the parent website (&lt;code>localhost&lt;/code> in this example) with the following settings:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>pattern&lt;/strong>: rdp(/)?(.*)&lt;/li>
+&lt;li>check the &lt;strong>Ignore case&lt;/strong> checkbox&lt;/li>
+&lt;li>&lt;strong>rewrite&lt;/strong> URL (VM&amp;rsquo;s IP) set to http://172.17.111.38:8080/{R:2}&lt;/li>
+&lt;li>check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/li>
+&lt;li>check the &lt;strong>Stop processing of subsequent rules&lt;/strong> checkbox&lt;/li>
+&lt;/ul>
+&lt;h1 id="heading">&lt;/h1>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
 &lt;p>content from &lt;a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">Github Help&lt;/a>&lt;/p>
 &lt;/blockquote>
