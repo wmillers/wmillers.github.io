@@ -1,5 +1,5 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;blockquote>
-&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于&lt;code>rdp客户端&lt;/code>的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使&lt;code>guacamole&lt;/code>将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要服务端和向局域网开放3389端口。&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端 Guacamole</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;blockquote>
+&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使&lt;code>Guacamole&lt;/code>将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要服务端和向局域网开放3389端口。&lt;/p>
 &lt;/blockquote>
 &lt;p>本文搭建的环境和程序如下&lt;/p>
 &lt;table>
@@ -39,7 +39,7 @@
 &lt;td>IIS Webserver&lt;/td>
 &lt;td>HTTPS auth and port redirect&lt;/td>
 &lt;td>Win 10&lt;/td>
-&lt;td>192.168.51.24:443 172.17.111.33 (Hyper-V)&lt;/td>
+&lt;td>192.168.51.24:443 (Lan) 172.17.111.33 (Hyper-V)&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
@@ -100,17 +100,14 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 8080:8080 &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/user-mapping.xml:/config &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> oznu/guacamole
-&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="config-url-rewrite">Config URL rewrite&lt;/h1>
-&lt;h2 id="iis-webserver-to-guacamole">IIS Webserver to Guacamole&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="iis-webserver-url-rewrite">IIS Webserver URL rewrite&lt;/h1>
 &lt;h3 id="install-application-request-routing-arr-module">Install Application Request Routing (ARR) module&lt;/h3>
 &lt;p>Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
 &lt;h3 id="change-url-rewrite-settings">Change URL rewrite settings&lt;/h3>
-&lt;ol>
-&lt;li>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;/li>
-&lt;li>Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/li>
-&lt;/ol>
-&lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;br>
-The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another web app that hosted on the IIS server) to be rewritten to the &lt;code>rdp&lt;/code> sevice. Also check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/p>
+&lt;p>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;br>
+Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/p>
+&lt;h4 id="inbound-rules">Inbound Rules&lt;/h4>
+&lt;p>The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another web app that hosted on the IIS server) to be rewritten to the &lt;code>rdp&lt;/code> sevice. Also check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -144,7 +141,7 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;p>&lt;strong>Outbound Rules&lt;/strong>&lt;/p>
+&lt;h4 id="outbound-rules">Outbound Rules&lt;/h4>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -169,7 +166,8 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;h1 id="heading">&lt;/h1>
+&lt;h1 id="test-connection">Test connection&lt;/h1>
+&lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code>, input your username and password set in &lt;code>user-mapping.xml&lt;/code>.&lt;/p>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
 &lt;p>content from &lt;a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">Github Help&lt;/a>&lt;/p>
 &lt;/blockquote>
