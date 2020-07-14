@@ -55,59 +55,72 @@
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;h1 id="prepare-config-file">Prepare config file&lt;/h1>
+&lt;h1 id="no-need-to-prepare-config-file">No Need To Prepare Config File&lt;/h1>
 &lt;blockquote>
 &lt;p>More offcial Docs &lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">Here&lt;/a>&lt;/p>
 &lt;/blockquote>
-&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
-Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
-In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
-&lt;strong>user-mapping.xml&lt;/strong>&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;user-mapping&amp;gt;&lt;/span>
-&lt;span style="color:#75715e">&amp;lt;!-- Per-user authentication and config information
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;authorize username=&amp;#34;USERNAME&amp;#34; password=&amp;#34;PASSWORD&amp;#34;&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;protocol&amp;gt;vnc&amp;lt;/protocol&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;hostname&amp;#34;&amp;gt;localhost&amp;lt;/param&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;port&amp;#34;&amp;gt;5900&amp;lt;/param&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;param name=&amp;#34;password&amp;#34;&amp;gt;VNCPASS&amp;lt;/param&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> &amp;lt;/authorize&amp;gt;
-&lt;/span>&lt;span style="color:#75715e"> --&amp;gt;&lt;/span>
-&lt;span style="color:#75715e">&amp;lt;!-- Another user, but using md5 to hash the password
-&lt;/span>&lt;span style="color:#75715e"> (example below uses the md5 hash of &amp;#34;PASSWORD&amp;#34;) --&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;authorize&lt;/span>
-&lt;span style="color:#a6e22e">username=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;admin&amp;#34;&lt;/span>
-&lt;span style="color:#a6e22e">password=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;**PASSWORD CONVERT TO MD5**&amp;#34;&lt;/span>
-&lt;span style="color:#a6e22e">encoding=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;md5&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;connection&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Unique Name&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;protocol&amp;gt;&lt;/span>rdp&lt;span style="color:#f92672">&amp;lt;/protocol&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;param&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;hostname&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>172.17.111.33&lt;span style="color:#f92672">&amp;lt;/param&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;param&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;port&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>3389&lt;span style="color:#f92672">&amp;lt;/param&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;/connection&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;/authorize&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">&amp;lt;/user-mapping&amp;gt;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
 &lt;blockquote>
-&lt;p>&lt;a href="hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
+&lt;p>&lt;strong>This Part&lt;/strong> is for the native build therefore &lt;strong>SHOULD BE SKIPPED&lt;/strong>. As we use docker file here, the default user has beenset to &lt;code>guacadmin&lt;/code> with password &lt;code>guacadmin&lt;/code>.&lt;/p>
+&lt;/blockquote>
+&lt;pre>&lt;code>First, prepare the config file that will be used by `guacamole`.
+Replace `172.17.111.33` with your `Win 10` IP address connected to the `Hyper-v` (as `172.17.111.38` is the VM's IP that `Hyper-v` assigned to). Also don't forget to change the `username` and `password (md5)`.
+In `Debian`, you can use `md5sum &amp;lt;File contains PASSWORD&amp;gt;` to hash your plain password.
+**/root/guacamole/user-mapping.xml**
+```xml
+&amp;lt;user-mapping&amp;gt;
+&amp;lt;!-- Per-user authentication and config information
+&amp;lt;authorize username=&amp;quot;USERNAME&amp;quot; password=&amp;quot;PASSWORD&amp;quot;&amp;gt;
+&amp;lt;protocol&amp;gt;vnc&amp;lt;/protocol&amp;gt;
+&amp;lt;param name=&amp;quot;hostname&amp;quot;&amp;gt;localhost&amp;lt;/param&amp;gt;
+&amp;lt;param name=&amp;quot;port&amp;quot;&amp;gt;5900&amp;lt;/param&amp;gt;
+&amp;lt;param name=&amp;quot;password&amp;quot;&amp;gt;VNCPASS&amp;lt;/param&amp;gt;
+&amp;lt;/authorize&amp;gt;
+--&amp;gt;
+&amp;lt;!-- Another user, but using md5 to hash the password
+(example below uses the md5 hash of &amp;quot;PASSWORD&amp;quot;) --&amp;gt;
+&amp;lt;authorize
+username=&amp;quot;admin&amp;quot;
+password=&amp;quot;**PASSWORD CONVERT TO MD5**&amp;quot;
+encoding=&amp;quot;md5&amp;quot;&amp;gt;
+&amp;lt;connection name=&amp;quot;Unique Name&amp;quot;&amp;gt;
+&amp;lt;protocol&amp;gt;rdp&amp;lt;/protocol&amp;gt;
+&amp;lt;param name=&amp;quot;hostname&amp;quot;&amp;gt;172.17.111.33&amp;lt;/param&amp;gt;
+&amp;lt;param name=&amp;quot;port&amp;quot;&amp;gt;3389&amp;lt;/param&amp;gt;
+&amp;lt;/connection&amp;gt;
+&amp;lt;/authorize&amp;gt;
+&amp;lt;/user-mapping&amp;gt;
+&lt;/code>&lt;/pre>&lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;ol>
 &lt;li>Pull image from docker&lt;/li>
 &lt;/ol>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker pull oznu/guacamole
 &lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
-&lt;li>Run container (replace &lt;code>/root/user-mapping.xml&lt;/code> with your config file)&lt;/li>
+&lt;li>Build a &lt;code>Dockerfile&lt;/code> that used for changing base url.
+Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the place where you put the &lt;code>Dockerfile&lt;/code> to bulid a new image.&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> oznu/guacamole:latest&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -x &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/ROOT &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mv &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/ROOT.war &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/rdp.war&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>Run container (replace &lt;code>/root/guacamole&lt;/code> with your config directory which is should &lt;code>mkdir&lt;/code> first when new build) from your new-built image.&lt;/li>
 &lt;/ol>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 8080:8080 &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/user-mapping.xml:/config &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> oznu/guacamole
-&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="iis-webserver-url-rewrite">IIS Webserver URL rewrite&lt;/h1>
-&lt;h3 id="install-application-request-routing-arr-module">Install Application Request Routing (ARR) module&lt;/h3>
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/guacamole:/config &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="iis-webserver-url-rewrite">IIS Webserver URL Rewrite&lt;/h1>
+&lt;h3 id="install-application-request-routing-arr-module">Install Application Request Routing (ARR) Module&lt;/h3>
 &lt;p>Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
-&lt;h3 id="change-url-rewrite-settings">Change URL rewrite settings&lt;/h3>
+&lt;h3 id="change-url-rewrite-settings">Change URL Rewrite Settings&lt;/h3>
 &lt;p>Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;br>
 Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/p>
 &lt;h4 id="inbound-rules">Inbound Rules&lt;/h4>
-&lt;p>The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another web app that hosted on the IIS server) to be rewritten to the &lt;code>rdp&lt;/code> sevice. Also check the &lt;strong>Append query string&lt;/strong> checkbox&lt;/p>
+&lt;p>The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another web app that hosted on the IIS server) to be rewritten to the &lt;code>rdp&lt;/code> sevice. Also need to check the &lt;strong>Append query string&lt;/strong> checkbox.&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -166,8 +179,14 @@ Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Ou
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;h1 id="test-connection">Test connection&lt;/h1>
-&lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code>, input your username and password set in &lt;code>user-mapping.xml&lt;/code>.&lt;/p>
+&lt;h1 id="edit-settings">Edit Settings&lt;/h1>
+&lt;h2 id="add-account">Add Account&lt;/h2>
+&lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
+After a successfully login, open settings and click on the &lt;code>Users&lt;/code>. Create your own account with administator privileges and delete the default &lt;code>guacadmin&lt;/code> account.&lt;/p>
+&lt;h2 id="add-connections">Add Connections&lt;/h2>
+&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (Better not to use ip), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
+&lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
+&lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
 &lt;p>content from &lt;a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">Github Help&lt;/a>&lt;/p>
 &lt;/blockquote>
