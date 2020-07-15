@@ -36,22 +36,28 @@
 &lt;/thead>
 &lt;tbody>
 &lt;tr>
-&lt;td>IIS Webserver&lt;/td>
-&lt;td>HTTPS auth and port redirect&lt;/td>
+&lt;td>Nginx&lt;/td>
+&lt;td>HTTPS auth and reverse proxy&lt;/td>
 &lt;td>Win 10&lt;/td>
-&lt;td>192.168.51.24:443 (Lan) 172.17.111.33 (Hyper-V)&lt;/td>
+&lt;td>https://192.168.51.24 Lan&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>IIS Webserver (not included)&lt;/td>
+&lt;td>Other web app (Webdav)&lt;/td>
+&lt;td>Win 10&lt;/td>
+&lt;td>http://127.0.0.1:8088/S4f_ Local&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
 &lt;td>HTML5 RDP server&lt;/td>
 &lt;td>Hyper-v&lt;/td>
-&lt;td>172.17.111.38:8080&lt;/td>
+&lt;td>http://172.17.111.38:8080/rdp&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>RDP&lt;/td>
 &lt;td>Microsoft remote desktop&lt;/td>
-&lt;td>Hyper-v&lt;/td>
-&lt;td>127.0.0.1:3389&lt;/td>
+&lt;td>Win 10&lt;/td>
+&lt;td>172.17.111.33:3389 Hyper-V&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -84,18 +90,72 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 8080:8080 &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/guacamole:/config &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
-&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="iis-webserver-url-rewrite">IIS Webserver URL Rewrite&lt;/h1>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="nginx-url-rewrite">Nginx URL Rewrite&lt;/h1>
 &lt;p>My Original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
-&lt;h1 id="edit-settings">Edit Settings&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="install-nginx-on-windows">Install Nginx on Windows&lt;/h2>
+&lt;p>Download &lt;a href="https://nginx.org/download/nginx-1.19.1.zip">&lt;strong>Nginx&lt;/strong>&lt;/a> zip file and extract to your disk.&lt;/p>
+&lt;h2 id="add-proxy-config">Add Proxy Config&lt;/h2>
+&lt;p>Add those lines to your &lt;code>conf/nginx.conf&lt;/code> file inside the &lt;code>server&lt;/code> tag.
+Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code> url path and &lt;code>172.17.60.60&lt;/code> with your &lt;code>hyper-v&lt;/code> ip.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/rdp/&lt;/span> {
+&lt;span style="color:#960050;background-color:#1e0010">proxy_pass&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">http://172.17.50.60:8080/rdp/;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_buffering&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_http_version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">1.1;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">X-Forwarded-For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$proxy_add_x_forwarded_for;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Upgrade&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_upgrade;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Connection&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_connection;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">access_log&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/S&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">f_/&lt;/span> {
+&lt;span style="color:#960050;background-color:#1e0010">proxy_pass&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">http://127.0.0.1:8088/S4f_/;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_buffering&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_http_version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">2.0;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">X-Forwarded-For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$proxy_add_x_forwarded_for;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Upgrade&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_upgrade;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Connection&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_connection;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">access_log&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="config-https-and-auth">Config HTTPS and Auth&lt;/h2>
+&lt;p>Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/conf/&lt;/code> folder.
+You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>
+Replace &lt;code>server&lt;/code> config with following lines.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#960050;background-color:#1e0010">server&lt;/span> {
+&lt;span style="color:#960050;background-color:#1e0010">listen&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">443&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ssl;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">server_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">localhost;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">server_tokens&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">ssl_certificate&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server.crt;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">ssl_certificate_key&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server.key;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">ssl_protocols&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">TLSv1.2&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">TLSv1.3;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">ssl_prefer_server_ciphers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">on;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">ssl_ciphers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">HIGH:!aNULL:!MD5;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">add_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Strict-Transport-Security&lt;/span> &lt;span style="color:#f92672">&amp;#34;max-age=31536000; includeSubDomains&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">always;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And to disable default nginx index page, add in &lt;code>server&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/&lt;/span> {
+&lt;span style="color:#960050;background-color:#1e0010">return&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">404;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
+&lt;h1 id="edit-guacamole-settings">Edit Guacamole Settings&lt;/h1>
 &lt;h2 id="add-account">Add Account&lt;/h2>
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
 After a successfully login, open settings and click on the &lt;code>Users&lt;/code>. Create your own account with all permissions checked and delete the default &lt;code>guacadmin&lt;/code> account.&lt;/p>
 &lt;h2 id="add-connections">Add Connections&lt;/h2>
-&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (Better not to use ip), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
+&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
 &lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 &lt;hr>
-&lt;h1 id="deprecated">Deprecated&lt;/h1>
+&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;/p>
+&lt;section class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1" role="doc-endnote">
+&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
+Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address or &lt;code>Hostname&lt;/code> (&lt;strong>recommend&lt;/strong>) connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
+In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
+&lt;strong>/root/guacamole/user-mapping.xml&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;user-mapping&amp;gt;&lt;/span>
 &lt;span style="color:#75715e">&amp;lt;!-- Per-user authentication and config information
 &lt;/span>&lt;span style="color:#75715e"> &amp;lt;authorize username=&amp;#34;USERNAME&amp;#34; password=&amp;#34;PASSWORD&amp;#34;&amp;gt;
@@ -118,7 +178,11 @@ After a successfully login, open settings and click on the &lt;code>Users&lt;/co
 &lt;span style="color:#f92672">&amp;lt;/connection&amp;gt;&lt;/span>
 &lt;span style="color:#f92672">&amp;lt;/authorize&amp;gt;&lt;/span>
 &lt;span style="color:#f92672">&amp;lt;/user-mapping&amp;gt;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Change URL Rewrite Settings&lt;/strong>
+&lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;li id="fn:2" role="doc-endnote">
+&lt;p>&lt;strong>Install Application Request Routing (ARR) Module&lt;/strong>
+Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>Change URL Rewrite Settings&lt;/strong>
 Open the &lt;code>IIS Manager&lt;/code> and open the &lt;code>Default Web Site&lt;/code> config pannel. Then double click on the &lt;code>URL Rewrite&lt;/code> option.&lt;br>
 Add 2 rules for &lt;code>Inbound rules&lt;/code> and another one for &lt;code>Outbound Rules&lt;/code> by clicking on the &lt;code>Add Rule(s)...&lt;/code> action and Choose the &lt;code>Blank Rule&lt;/code> template. Contents that needed to be changed are in the following tables:&lt;/p>
 &lt;p>&lt;strong>Inbound Rules&lt;/strong>&lt;br>
@@ -156,19 +220,13 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;section class="footnotes" role="doc-endnotes">
-&lt;hr>
-&lt;ol>
-&lt;li id="fn:1" role="doc-endnote">
-&lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
-Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
-In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
-&lt;strong>/root/guacamole/user-mapping.xml&lt;/strong> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li id="fn:2" role="doc-endnote">
-&lt;p>&lt;strong>Install Application Request Routing (ARR) Module&lt;/strong>
-Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>. &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
-&lt;/li>
+&lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;li id="fn:3" role="doc-endnote">
+&lt;p>Generate your &lt;code>conf/userpass.txt&lt;/code> file by command &lt;code>htpasswd&lt;/code> or online &lt;code>MD5 htpasswd&lt;/code> generator. Text inside are like &lt;code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0&lt;/code>.
+Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code>.&lt;/p>
+&lt;pre>&lt;code> auth_basic &amp;quot;Auth&amp;quot;;
+auth_basic_user_file userpass.txt;
+&lt;/code>&lt;/pre> &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;/ol>
 &lt;/section>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
