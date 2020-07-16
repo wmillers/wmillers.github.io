@@ -31,6 +31,7 @@
 &lt;th>Program&lt;/th>
 &lt;th>Usage&lt;/th>
 &lt;th>Environment&lt;/th>
+&lt;th>Protocol&lt;/th>
 &lt;th>Address&lt;/th>
 &lt;/tr>
 &lt;/thead>
@@ -38,26 +39,30 @@
 &lt;tr>
 &lt;td>Nginx&lt;/td>
 &lt;td>HTTPS auth and reverse proxy&lt;/td>
-&lt;td>Win 10&lt;/td>
-&lt;td>https://192.168.51.24 Lan&lt;/td>
+&lt;td>Hyper-v&lt;/td>
+&lt;td>HTTPS: Lan&lt;/td>
+&lt;td>192.168.51.118&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>IIS Webserver (not included)&lt;/td>
+&lt;td>IIS Webserver&lt;/td>
 &lt;td>Other web app (Webdav)&lt;/td>
 &lt;td>Win 10&lt;/td>
-&lt;td>http://127.0.0.1:8088/S4f_ Local&lt;/td>
+&lt;td>HTTP: Hyper-v&lt;/td>
+&lt;td>WIN10.mshome.net:8088/S4f_&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
 &lt;td>HTML5 RDP server&lt;/td>
 &lt;td>Hyper-v&lt;/td>
-&lt;td>http://172.17.111.38:8080/rdp&lt;/td>
+&lt;td>HTTP: Hyper-v&lt;/td>
+&lt;td>127.0.0.1:8080/rdp&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>RDP&lt;/td>
 &lt;td>Microsoft remote desktop&lt;/td>
 &lt;td>Win 10&lt;/td>
-&lt;td>172.17.111.33:3389 Hyper-V&lt;/td>
+&lt;td>RDP: Hyper-v&lt;/td>
+&lt;td>WIN10.mshome.net:3389&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -69,6 +74,9 @@
 &lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
 &lt;blockquote>
 &lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;ol>
 &lt;li>Pull image from docker&lt;/li>
@@ -87,57 +95,101 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;li>Run container (replace &lt;code>/root/guacamole&lt;/code> with your config directory which is should &lt;code>mkdir&lt;/code> first when new build) from your new-built image.&lt;/li>
 &lt;/ol>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 8080:8080 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 127.0.0.1:8080:8080 &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/guacamole:/config &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="nginx-url-rewrite">Nginx URL Rewrite&lt;/h1>
-&lt;p>My Original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+&lt;p>My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>&lt;/p>
 &lt;/blockquote>
-&lt;h2 id="install-nginx-on-windows">Install Nginx on Windows&lt;/h2>
-&lt;p>Download &lt;a href="https://nginx.org/download/nginx-1.19.1.zip">&lt;strong>Nginx&lt;/strong>&lt;/a> zip file and extract to your disk.&lt;/p>
-&lt;h2 id="add-proxy-config">Add Proxy Config&lt;/h2>
-&lt;p>Add those lines to your &lt;code>conf/nginx.conf&lt;/code> file inside the &lt;code>server&lt;/code> tag.
-Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code> url path and &lt;code>172.17.60.60&lt;/code> with your &lt;code>hyper-v&lt;/code> ip.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/rdp/&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">proxy_pass&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">http://172.17.50.60:8080/rdp/;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_buffering&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_http_version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">1.1;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">X-Forwarded-For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$proxy_add_x_forwarded_for;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Upgrade&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_upgrade;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Connection&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_connection;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">access_log&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/S&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">f_/&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">proxy_pass&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">http://127.0.0.1:8088/S4f_/;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_buffering&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_http_version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">2.0;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">X-Forwarded-For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$proxy_add_x_forwarded_for;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Upgrade&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_upgrade;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">proxy_set_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Connection&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$http_connection;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">access_log&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
-}
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="install-nginx-with-webdav-module">Install Nginx with Webdav module&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get install nginx-full -y
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="remove-default-page">Remove Default Page&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rm /etc/nginx/sites-enabled/default
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-proxy-config">Add Proxy Config&lt;/h2>
+&lt;p>Add those lines to your &lt;code>/etc/nginx/nginx.conf&lt;/code> file inside the &lt;code>server&lt;/code> tag.
+Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code>'s url path.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location /rdp/ &lt;span style="color:#f92672">{&lt;/span>
+proxy_buffering off;
+proxy_http_version 1.1;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection $http_connection;
+access_log off;
+proxy_pass http://127.0.0.1:8080/rdp/;
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path, and &lt;code>WIN10.mshome.net&lt;/code> with your Win 10&amp;rsquo;s ip &lt;strong>(normally the alias could be &lt;code>YourHostName.mshome.net&lt;/code>)&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
+dav_methods PUT DELETE MKCOL COPY MOVE;
+proxy_redirect off;
+proxy_buffering off;
+proxy_http_version 1.1;
+proxy_set_header Host $http_host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header http_x_forwarded_for $remote_addr;
+proxy_set_header remote_addr $remote_addr;
+access_log off;
+proxy_pass http://WIN10.mshome.net:8088/S4f_/;
+&lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="config-https-and-auth">Config HTTPS and Auth&lt;/h2>
-&lt;p>Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/conf/&lt;/code> folder.
+&lt;p>Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/&lt;/code> folder (use &lt;code>scp /path/to/file username@a:/path/to/destination&lt;/code> or &lt;code>Winscp&lt;/code>).
 You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>
 Replace &lt;code>server&lt;/code> config with following lines.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#960050;background-color:#1e0010">server&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">listen&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">443&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ssl;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">server_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">localhost;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">server_tokens&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">off;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ssl_certificate&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server.crt;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ssl_certificate_key&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server.key;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ssl_protocols&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">TLSv1.2&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">TLSv1.3;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ssl_prefer_server_ciphers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">on;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ssl_ciphers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">HIGH:!aNULL:!MD5;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">add_header&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Strict-Transport-Security&lt;/span> &lt;span style="color:#f92672">&amp;#34;max-age=31536000; includeSubDomains&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">always;&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">server &lt;span style="color:#f92672">{&lt;/span>
+listen &lt;span style="color:#ae81ff">443&lt;/span> ssl;
+server_name localhost;
+server_tokens off;
+ssl_certificate server.crt;
+ssl_certificate_key server.key;
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_prefer_server_ciphers on;
+ssl_ciphers HIGH:!aNULL:!MD5;
+add_header Strict-Transport-Security &lt;span style="color:#e6db74">&amp;#34;max-age=31536000; includeSubDomains&amp;#34;&lt;/span> always;
+&lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>And to disable default nginx index page, add in &lt;code>server&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">return&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">404;&lt;/span>
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location / &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> 404;
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>&lt;strong>As a summary, your &lt;code>nginx.conf&lt;/code> file should look like this:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># Default settings and others&lt;/span>
+http &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># Default but remember to delete SSL-related settings&lt;/span>
+&lt;span style="color:#75715e"># Because it&amp;#39;s included in server&lt;/span>
+server &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># ...&lt;/span>
+location / &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> 404;
+&lt;span style="color:#f92672">}&lt;/span>
+location /rdp/ &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When done, restart your Nginx service:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">systemctl restart nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="make-nginx-as-the-doorway">Make Nginx as the Doorway&lt;/h2>
+&lt;p>To get double IPs in debian VM, first you need to add two network interfaces (one is external and the other is internal) on hyper-v. Then log into debian and add those lines to &lt;code>/etc/network/interfaces&lt;/code> before applying changes by &lt;code>systemctl restart networking&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
+iface eth0 inet dhcp
+auto eth1
+iface eth1 inet dhcp
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Type &lt;code>ip a&lt;/code> in command to find your IPs.&lt;/p>
+&lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
+&lt;p>For Nginx:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># nginx autostart (enable)/ disable (disable)&lt;/span>
+systemctl enable nginx
+&lt;span style="color:#75715e"># nginx start/stop/status&lt;/span>
+systemctl start nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To check port use &lt;code>lsof -i -P&lt;/code>.The Nginx log is in &lt;code>/var/log/nginx/&lt;/code> as &lt;code>access.log&lt;/code> and &lt;code>error.log&lt;/code> for debug.&lt;/p>
 &lt;h1 id="edit-guacamole-settings">Edit Guacamole Settings&lt;/h1>
 &lt;h2 id="add-account">Add Account&lt;/h2>
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
