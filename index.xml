@@ -1,6 +1,4 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端 Guacamole</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;blockquote>
-&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使&lt;code>Guacamole&lt;/code>将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要服务端和向局域网开放3389端口。&lt;/p>
-&lt;/blockquote>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Win10 远程桌面 Html5 客户端 Guacamole</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用&lt;code>rdp服务&lt;/code>，最好不要直接开放其对应的3389端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文使&lt;code>Guacamole&lt;/code>将本地的&lt;code>rdp服务&lt;/code>转换成&lt;code>html5&lt;/code>内容，通过浏览器访问&lt;code>https&lt;/code>内容来实现连接，不再需要服务端和向局域网开放3389端口。&lt;/p>
 &lt;p>本文搭建的环境和程序如下&lt;/p>
 &lt;table>
 &lt;thead>
@@ -67,14 +65,10 @@
 &lt;/tbody>
 &lt;/table>
 &lt;h1 id="no-need-to-prepare-config-file">No Need To Prepare Config File&lt;/h1>
-&lt;blockquote>
 &lt;p>More offcial Docs &lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">Here&lt;/a>&lt;/p>
-&lt;/blockquote>
 &lt;p>&lt;strong>This Part&lt;/strong> is for the native build therefore &lt;strong>SHOULD BE SKIPPED&lt;/strong>. As we use docker file here, the default user has been set to &lt;code>guacadmin&lt;/code> with password &lt;code>guacadmin&lt;/code>.&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
 &lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
-&lt;blockquote>
 &lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
-&lt;/blockquote>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
@@ -94,15 +88,14 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
 &lt;li>Run container (replace &lt;code>/root/guacamole&lt;/code> with your config directory which is should &lt;code>mkdir&lt;/code> first when new build) from your new-built image.&lt;/li>
 &lt;/ol>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run &lt;span style="color:#ae81ff">\
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run -d &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> --name&lt;span style="color:#f92672">=&lt;/span>win10rdp &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -p 127.0.0.1:8080:8080 &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/guacamole:/config &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="nginx-url-rewrite">Nginx URL Rewrite&lt;/h1>
-&lt;p>My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>
+My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
@@ -175,7 +168,7 @@ location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>When done, restart your Nginx service:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">systemctl restart nginx
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl restart nginx
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="make-nginx-as-the-doorway">Make Nginx as the Doorway&lt;/h2>
 &lt;p>To get double IPs in debian VM, first you need to add two network interfaces (one is external and the other is internal) on hyper-v. Then log into debian and add those lines to &lt;code>/etc/network/interfaces&lt;/code> before applying changes by &lt;code>systemctl restart networking&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
@@ -184,13 +177,30 @@ auto eth1
 iface eth1 inet dhcp
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Type &lt;code>ip a&lt;/code> in command to find your IPs.&lt;/p>
 &lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
-&lt;p>For Nginx:&lt;/p>
+&lt;p>For &lt;code>Nginx&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># nginx autostart (enable)/ disable (disable)&lt;/span>
-systemctl enable nginx
+sudo systemctl enable nginx
 &lt;span style="color:#75715e"># nginx start/stop/status&lt;/span>
-systemctl start nginx
+sudo systemctl start nginx
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To check port use &lt;code>lsof -i -P&lt;/code>.The Nginx log is in &lt;code>/var/log/nginx/&lt;/code> as &lt;code>access.log&lt;/code> and &lt;code>error.log&lt;/code> for debug.&lt;/p>
-&lt;h1 id="edit-guacamole-settings">Edit Guacamole Settings&lt;/h1>
+&lt;hr>
+&lt;p>For &lt;code>Guacamole&lt;/code>, in &lt;code>/etc/systemd/system/docker-win10rdp.service&lt;/code> add:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">Unit&lt;/span>]
+&lt;span style="color:#a6e22e">Description&lt;/span>=&lt;span style="color:#a6e22e">Docker&lt;/span> &lt;span style="color:#a6e22e">for&lt;/span> &lt;span style="color:#a6e22e">win10rdp&lt;/span>
+&lt;span style="color:#a6e22e">Requires&lt;/span>=&lt;span style="color:#a6e22e">docker&lt;/span>.&lt;span style="color:#a6e22e">service&lt;/span>
+&lt;span style="color:#a6e22e">After&lt;/span>=&lt;span style="color:#a6e22e">docker&lt;/span>.&lt;span style="color:#a6e22e">service&lt;/span>
+[&lt;span style="color:#a6e22e">Service&lt;/span>]
+&lt;span style="color:#a6e22e">Restart&lt;/span>=&lt;span style="color:#a6e22e">always&lt;/span>
+&lt;span style="color:#a6e22e">ExecStart&lt;/span>=&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">usr&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">bin&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">docker&lt;/span> &lt;span style="color:#a6e22e">start&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#a6e22e">win10rdp&lt;/span>
+&lt;span style="color:#a6e22e">ExecStop&lt;/span>=&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">usr&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">bin&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">docker&lt;/span> &lt;span style="color:#a6e22e">stop&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">t&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#a6e22e">win10rdp&lt;/span>
+[&lt;span style="color:#a6e22e">Install&lt;/span>]
+&lt;span style="color:#a6e22e">WantedBy&lt;/span>=&lt;span style="color:#a6e22e">default&lt;/span>.&lt;span style="color:#a6e22e">target&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Enable the service:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl enable docker-win10rdp.service
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="edit-guacamole-settings">Edit Guacamole Settings&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="add-account">Add Account&lt;/h2>
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
 After a successfully login, open settings and click on the &lt;code>Users&lt;/code>. Create your own account with all permissions checked and delete the default &lt;code>guacadmin&lt;/code> account.&lt;/p>
@@ -199,7 +209,9 @@ After a successfully login, open settings and click on the &lt;code>Users&lt;/co
 &lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 &lt;hr>
+&lt;blockquote>
 &lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
