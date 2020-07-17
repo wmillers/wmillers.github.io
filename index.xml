@@ -224,9 +224,15 @@ sudo systemctl start nginx
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
 After a successfully login, open settings and click on the &lt;code>Users&lt;/code>. Create your own account with all permissions checked and delete the default &lt;code>guacadmin&lt;/code> account.&lt;/p>
 &lt;h2 id="add-connections">Add Connections&lt;/h2>
-&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
-&lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
+&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.
+If you want to enhance VM server&amp;rsquo;s security, you can add a &lt;code>ssh&lt;/code> connection from docker to host. use &lt;code>ip a&lt;/code> to check &lt;code>docker0&lt;/code> host&amp;rsquo;s ip. Also, change the settings in &lt;code>/etc/ssh/sshd_config&lt;/code> by change &lt;code>port&lt;/code> and &lt;code>listenAddress&lt;/code>. Apply changes &lt;code>sudo systemctl restart sshd&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Port &lt;span style="color:#ae81ff">25678&lt;/span>
+&lt;span style="color:#75715e"># same as docker0 in ip a&lt;/span>
+ListenAddress 172.18.0.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
+&lt;h2 id="expose-3389-to-hyper-v-only">Expose 3389 to Hyper-v only&lt;/h2>
+&lt;p>Open firewall advance settings, add two allow rules for TCP and UDP port&lt;code>3389&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm. Disable old TCP and UDP port &lt;code>3389&lt;/code> allow rules.&lt;/p>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
