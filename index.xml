@@ -1,4 +1,35 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>用 Nginx 反代降低暴露 RDP 和 IIS 端口带来的风险</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文介绍如何用&lt;code>Nginx&lt;/code>反向代理减少暴露额外的端口带来的安全风险。&lt;code>Nginx&lt;/code>监听 443 端口传入的 HTTPS 协议内容，并按路径转发给 Docker 中的&lt;code>Guacamole&lt;/code>和 Hyper-v VM 外的 IIS 服务端。&lt;code>Guacamole&lt;/code>将宿主机的 RDP 服务转换成 HTML5 内容，不再需要服务端和向局域网开放 3389 端口。&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Sat, 18 Jul 2020 00:05:26 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Self Signed Ca Server Cert</title><link>//wmillers.github.io/posts/self-signed-ca-server-cert/</link><pubDate>Sat, 18 Jul 2020 00:05:26 +0800</pubDate><guid>//wmillers.github.io/posts/self-signed-ca-server-cert/</guid><description>源 //wmillers.github.io/posts/self-signed-ca-server-cert/ -&lt;p>旧的自签CA以及服务器证书生成的命令合集，总的流程是:&lt;/p>
+&lt;ol>
+&lt;li>CA.key+CA.crt&lt;/li>
+&lt;li>server.key+server.csr&lt;/li>
+&lt;li>server.crt&lt;/li>
+&lt;li>server.pfx&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e">#服务器端私钥和CA证书生成&lt;/span>
+openssl req -x509 -newkey rsa:4096 -new -nodes -sha256 -days &lt;span style="color:#ae81ff">36500&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -keyout CA.key -out CA.crt &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -subj &lt;span style="color:#e6db74">&amp;#39;/CN=Used for LAN - ROOT/O=Ab&amp;#39;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -config &amp;lt;&lt;span style="color:#f92672">(&lt;/span>cat /etc/ssl/openssl.cnf - &lt;span style="color:#e6db74">&amp;lt;&amp;lt;END
+&lt;/span>&lt;span style="color:#e6db74"> [ x509_ext ]
+&lt;/span>&lt;span style="color:#e6db74"> basicConstraints = critical,CA:true
+&lt;/span>&lt;span style="color:#e6db74"> subjectKeyIdentifier = hash
+&lt;/span>&lt;span style="color:#e6db74"> authorityKeyIdentifier = keyid:always,issuer
+&lt;/span>&lt;span style="color:#e6db74">END&lt;/span>
+&lt;span style="color:#f92672">)&lt;/span> -extensions x509_ext
+openssl req -new -out server.csr -keyout server.key &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -newkey rsa:4096 -nodes -sha256 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -subj &lt;span style="color:#e6db74">&amp;#34;/C=US/ST=/L=/O=Ab/OU=/CN=Debian10&amp;#34;&lt;/span>
+openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -CA CA.crt -CAkey CA.key -CAcreateserial &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -extensions SAN &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -extfile &amp;lt;&lt;span style="color:#f92672">(&lt;/span>cat /etc/ssl/openssl.cnf &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &amp;lt;&lt;span style="color:#f92672">(&lt;/span>printf &lt;span style="color:#e6db74">&amp;#34;\n[SAN]\nsubjectAltName=DNS:Debian10,IP:192.168.51.24,IP:192.168.51.112,IP:192.168.51.118&amp;#34;&lt;/span>&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -in server.csr -out server.crt
+openssl pkcs12 -export -out server.pfx -inkey server.key -in server.crt -certfile CA.crt
+&lt;span style="color:#75715e">#客户端生成 生成csr是为了公钥&lt;/span>
+openssl req -new -keyout user.key -out user.csr -newkey rsa:4096 -sha256 -nodes -subj &lt;span style="color:#e6db74">&amp;#39;/CN=Used for LAN/O=Ab&amp;#39;&lt;/span>
+openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -in user.csr -CA CA.crt -CAkey CA.key -CAcreateserial -out user.crt
+openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.crt
+&lt;/code>&lt;/pre>&lt;/div>- //wmillers.github.io/posts/self-signed-ca-server-cert/ - wmillers</description></item><item><title>用 Nginx 反代降低暴露 RDP 和 IIS 端口带来的风险</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文介绍如何用&lt;code>Nginx&lt;/code>反向代理减少暴露额外的端口带来的安全风险。&lt;code>Nginx&lt;/code>监听 443 端口传入的 HTTPS 协议内容，并按路径转发给 Docker 中的&lt;code>Guacamole&lt;/code>和 Hyper-v VM 外的 IIS 服务端。&lt;code>Guacamole&lt;/code>将宿主机的 RDP 服务转换成 HTML5 内容，不再需要服务端和向局域网开放 3389 端口。&lt;/p>
 &lt;p>本文搭建的环境和程序如下&lt;/p>
 &lt;table>
 &lt;thead>
@@ -166,7 +197,8 @@ access_log off;
 proxy_pass http://192.168.208.145:8088/S4f_/;
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="config-https-and-auth">Config HTTPS and Auth&lt;/h2>
-&lt;p>Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/&lt;/code> folder (use &lt;code>scp /path/to/file username@a:/path/to/destination&lt;/code> or &lt;code>Winscp&lt;/code>).
+&lt;p>About how to generate self-signed certificate, you can refer to &lt;a href="./self-signed-ca-server-cert">Here&lt;/a>.
+Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/&lt;/code> folder (use &lt;code>scp /path/to/file username@ip.ip.ip.ip:/path/to/destination&lt;/code> or &lt;code>Winscp&lt;/code>).
 You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>.&lt;sup id="fnref:5">&lt;a href="#fn:5" class="footnote-ref" role="doc-noteref">5&lt;/a>&lt;/sup>
 Replace &lt;code>server&lt;/code> config with following lines.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">server &lt;span style="color:#f92672">{&lt;/span>
