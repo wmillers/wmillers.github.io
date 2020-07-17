@@ -1,10 +1,5 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Sat, 18 Jul 2020 00:05:26 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Self Signed Ca Server Cert</title><link>//wmillers.github.io/posts/self-signed-ca-server-cert/</link><pubDate>Sat, 18 Jul 2020 00:05:26 +0800</pubDate><guid>//wmillers.github.io/posts/self-signed-ca-server-cert/</guid><description>源 //wmillers.github.io/posts/self-signed-ca-server-cert/ -&lt;p>旧的自签CA以及服务器证书生成的命令合集，总的流程是:&lt;/p>
-&lt;ol>
-&lt;li>CA.key+CA.crt&lt;/li>
-&lt;li>server.key+server.csr&lt;/li>
-&lt;li>server.crt&lt;/li>
-&lt;li>server.pfx&lt;/li>
-&lt;/ol>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Sat, 18 Jul 2020 00:05:26 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>自签 CA 和服务器证书命令合集</title><link>//wmillers.github.io/posts/self-signed-ca-server-cert/</link><pubDate>Sat, 18 Jul 2020 00:05:26 +0800</pubDate><guid>//wmillers.github.io/posts/self-signed-ca-server-cert/</guid><description>源 //wmillers.github.io/posts/self-signed-ca-server-cert/ -&lt;p>旧的自签CA以及服务器证书生成的命令合集，总的流程是:&lt;/p>
+&lt;h2 id="cakeycacrt">CA.key+CA.crt&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e">#服务器端私钥和CA证书生成&lt;/span>
 openssl req -x509 -newkey rsa:4096 -new -nodes -sha256 -days &lt;span style="color:#ae81ff">36500&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -keyout CA.key -out CA.crt &lt;span style="color:#ae81ff">\
@@ -16,16 +11,21 @@ openssl req -x509 -newkey rsa:4096 -new -nodes -sha256 -days &lt;span style="col
 &lt;/span>&lt;span style="color:#e6db74"> authorityKeyIdentifier = keyid:always,issuer
 &lt;/span>&lt;span style="color:#e6db74">END&lt;/span>
 &lt;span style="color:#f92672">)&lt;/span> -extensions x509_ext
-openssl req -new -out server.csr -keyout server.key &lt;span style="color:#ae81ff">\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="serverkeyservercsr">server.key+server.csr&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> openssl req -new -out server.csr -keyout server.key &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -newkey rsa:4096 -nodes -sha256 &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -subj &lt;span style="color:#e6db74">&amp;#34;/C=US/ST=/L=/O=Ab/OU=/CN=Debian10&amp;#34;&lt;/span>
-openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -CA CA.crt -CAkey CA.key -CAcreateserial &lt;span style="color:#ae81ff">\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="servercrt">server.crt&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -CA CA.crt -CAkey CA.key -CAcreateserial &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -extensions SAN &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -extfile &amp;lt;&lt;span style="color:#f92672">(&lt;/span>cat /etc/ssl/openssl.cnf &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &amp;lt;&lt;span style="color:#f92672">(&lt;/span>printf &lt;span style="color:#e6db74">&amp;#34;\n[SAN]\nsubjectAltName=DNS:Debian10,IP:192.168.51.24,IP:192.168.51.112,IP:192.168.51.118&amp;#34;&lt;/span>&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -in server.csr -out server.crt
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="serverpfx">server.pfx&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e"># Make a package&lt;/span>
 openssl pkcs12 -export -out server.pfx -inkey server.key -in server.crt -certfile CA.crt
-&lt;span style="color:#75715e">#客户端生成 生成csr是为了公钥&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="optional-userkeyusercsr--usercrtuserpfx">Optional: user.key+user.csr&amp;ndash;&amp;gt;user.crt+user.pfx&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e">#客户端生成 生成csr是为了公钥&lt;/span>
 openssl req -new -keyout user.key -out user.csr -newkey rsa:4096 -sha256 -nodes -subj &lt;span style="color:#e6db74">&amp;#39;/CN=Used for LAN/O=Ab&amp;#39;&lt;/span>
 openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -in user.csr -CA CA.crt -CAkey CA.key -CAcreateserial -out user.crt
 openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.crt
