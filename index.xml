@@ -46,7 +46,7 @@
 &lt;td>Other web app (Webdav)&lt;/td>
 &lt;td>Win 10&lt;/td>
 &lt;td>HTTP: Hyper-v&lt;/td>
-&lt;td>WIN10.mshome.net:8088/S4f_&lt;/td>
+&lt;td>192.168.208.145:8088/S4f_&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
@@ -60,7 +60,7 @@
 &lt;td>Microsoft remote desktop&lt;/td>
 &lt;td>Win 10&lt;/td>
 &lt;td>RDP: Hyper-v&lt;/td>
-&lt;td>WIN10.mshome.net:3389&lt;/td>
+&lt;td>192.168.208.145:3389&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -99,6 +99,15 @@ My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the UR
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
+&lt;h2 id="assign-ips-to-vm-3">Assign IPs to VM &lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/h2>
+&lt;p>To get double IPs in debian VM, first you need to add two network interfaces (here for example &lt;code>eth0&lt;/code> is external for Lan and the &lt;code>eth1&lt;/code> is internal to host) on hyper-v. Then login to the VM and add those lines to &lt;code>/etc/network/interfaces&lt;/code>, &lt;code>eth1&lt;/code>'s static ip is different from the host &lt;code>192.168.208.145&lt;/code> (like one number after) and mask is same as host&amp;rsquo;s &lt;strong>(you can find those in &lt;code>System Networking Control Panel&lt;/code>)&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
+iface eth0 inet dhcp
+auto eth1
+iface eth1 inet static
+ip 192.168.208.146
+mask 255.255.255.240
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Apply changes by &lt;code>systemctl restart networking&lt;/code>. Type &lt;code>ip a&lt;/code> in command to find your IPs.&lt;/p>
 &lt;h2 id="install-nginx-with-webdav-module">Install Nginx with Webdav module&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get install nginx-full -y
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="remove-default-page">Remove Default Page&lt;/h2>
@@ -107,6 +116,7 @@ My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the UR
 &lt;p>Add those lines to your &lt;code>/etc/nginx/nginx.conf&lt;/code> file inside the &lt;code>server&lt;/code> tag.
 Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code>'s url path.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location /rdp/ &lt;span style="color:#f92672">{&lt;/span>
+proxy_redirect off;
 proxy_buffering off;
 proxy_http_version 1.1;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -115,26 +125,33 @@ proxy_set_header Connection $http_connection;
 access_log off;
 proxy_pass http://127.0.0.1:8080/rdp/;
 &lt;span style="color:#f92672">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path, and &lt;code>WIN10.mshome.net&lt;/code> with your Win 10&amp;rsquo;s ip &lt;strong>(normally the alias could be &lt;code>YourHostName.mshome.net&lt;/code>)&lt;/strong>.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
-dav_methods PUT DELETE MKCOL COPY MOVE;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path, and &lt;code>192.168.208.145&lt;/code> with your Win 10&amp;rsquo;s internal ip. I also changed the query string from client to IIS to prevent problems&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup> &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e"># add in http&lt;/span>
+map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
+~*&lt;span style="color:#f92672">(&lt;/span>https?:&lt;span style="color:#ae81ff">\/\/&lt;/span>&lt;span style="color:#f92672">)([&lt;/span>a-z0-9&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#ae81ff">\/&lt;/span>&lt;span style="color:#f92672">)(&lt;/span>.+&lt;span style="color:#f92672">)&lt;/span>$ http://192.168.208.145:8088/$3;
+default $http_destination;
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#75715e"># add in server&lt;/span>
+location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
 proxy_redirect off;
 proxy_buffering off;
 proxy_http_version 1.1;
-proxy_set_header Host $http_host;
+proxy_set_header Destination $destination;
+&lt;span style="color:#75715e"># don&amp;#39;t set this header as webdav destination check needed&lt;/span>
+&lt;span style="color:#75715e"># proxy_set_header Host $http_host;&lt;/span>
 proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header http_x_forwarded_for $remote_addr;
 proxy_set_header remote_addr $remote_addr;
 access_log off;
-proxy_pass http://WIN10.mshome.net:8088/S4f_/;
+proxy_pass http://192.168.208.145:8088/S4f_/;
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="config-https-and-auth">Config HTTPS and Auth&lt;/h2>
 &lt;p>Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/&lt;/code> folder (use &lt;code>scp /path/to/file username@a:/path/to/destination&lt;/code> or &lt;code>Winscp&lt;/code>).
-You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>
+You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>.&lt;sup id="fnref:5">&lt;a href="#fn:5" class="footnote-ref" role="doc-noteref">5&lt;/a>&lt;/sup>
 Replace &lt;code>server&lt;/code> config with following lines.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">server &lt;span style="color:#f92672">{&lt;/span>
-listen &lt;span style="color:#ae81ff">443&lt;/span> ssl;
+listen &lt;span style="color:#ae81ff">443&lt;/span> ssl http2;
 server_name localhost;
 server_tokens off;
 ssl_certificate server.crt;
@@ -154,6 +171,9 @@ add_header Strict-Transport-Security &lt;span style="color:#e6db74">&amp;#34;max
 http &lt;span style="color:#f92672">{&lt;/span>
 &lt;span style="color:#75715e"># Default but remember to delete SSL-related settings&lt;/span>
 &lt;span style="color:#75715e"># Because it&amp;#39;s included in server&lt;/span>
+map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># ..&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
 server &lt;span style="color:#f92672">{&lt;/span>
 &lt;span style="color:#75715e"># ...&lt;/span>
 location / &lt;span style="color:#f92672">{&lt;/span>
@@ -169,14 +189,7 @@ location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>When done, restart your Nginx service:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl restart nginx
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="make-nginx-as-the-doorway">Make Nginx as the Doorway&lt;/h2>
-&lt;p>To get double IPs in debian VM, first you need to add two network interfaces (one is external and the other is internal) on hyper-v. Then log into debian and add those lines to &lt;code>/etc/network/interfaces&lt;/code> before applying changes by &lt;code>systemctl restart networking&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
-iface eth0 inet dhcp
-auto eth1
-iface eth1 inet dhcp
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Type &lt;code>ip a&lt;/code> in command to find your IPs.&lt;/p>
-&lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="manage-nginx-and-guacamole-to-autostart">Manage Nginx and Guacamole to Autostart&lt;/h2>
 &lt;p>For &lt;code>Nginx&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># nginx autostart (enable)/ disable (disable)&lt;/span>
 sudo systemctl enable nginx
@@ -208,14 +221,13 @@ After a successfully login, open settings and click on the &lt;code>Users&lt;/co
 &lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
 &lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
-&lt;hr>
-&lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;/p>
-&lt;/blockquote>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
 &lt;li id="fn:1" role="doc-endnote">
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> change config of Guacamole now in its GUI control panel rather in its config file.&lt;/p>
+&lt;/blockquote>
 &lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
 Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address or &lt;code>Hostname&lt;/code> (&lt;strong>recommend&lt;/strong>) connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
 In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
@@ -244,6 +256,9 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;span style="color:#f92672">&amp;lt;/user-mapping&amp;gt;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:2" role="doc-endnote">
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> use nginx reverse proxy instead because arr&amp;rsquo;s lack of Websocket support.&lt;/p>
+&lt;/blockquote>
 &lt;p>&lt;strong>Install Application Request Routing (ARR) Module&lt;/strong>
 Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
 &lt;p>&lt;strong>Change URL Rewrite Settings&lt;/strong>
@@ -286,11 +301,30 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/table>
 &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:3" role="doc-endnote">
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> the hostname that Hyper-v provided is not stable. It&amp;rsquo;s better set static ip both manually.&lt;/p>
+&lt;/blockquote>
+&lt;p>The old host-accessed-by-hostname (&lt;code>HOSTNAME.mshome.net&lt;/code>) plan is rather more unastable than assigning static ip to both host &lt;code>192.168.208.145&lt;/code> and VM &lt;code>192.168.208.146&lt;/code>. &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:4" role="doc-endnote">
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>Description:&lt;/strong>&lt;/em> related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for &lt;code>Webdav&lt;/code> service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my &lt;code>Webdav&lt;/code> client, however, it contains bugs while sending requests to a proxyed server.
+For example, rclone sends method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server when rename a file while the query uri to rename without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. &lt;del>Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.&lt;/del>
+&lt;strong>Edit1:&lt;/strong> It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bugs of rclone. More information about this is in description above.
+&lt;strong>Edit2:&lt;/strong> Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, Destination header is an absolute URI. Convert it to relative is not the solution. The better way is to change the scheme and path to IIS backend.
+&lt;strong>Edit3:&lt;/strong> &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (&lt;strong>should place in &lt;code>http&lt;/code> section&lt;/strong>) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxy &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:5" role="doc-endnote">
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>Optional&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;p>Generate your &lt;code>conf/userpass.txt&lt;/code> file by command &lt;code>htpasswd&lt;/code> or online &lt;code>MD5 htpasswd&lt;/code> generator. Text inside are like &lt;code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0&lt;/code>.
 Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code>.&lt;/p>
 &lt;pre>&lt;code> auth_basic &amp;quot;Auth&amp;quot;;
 auth_basic_user_file userpass.txt;
-&lt;/code>&lt;/pre> &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;/code>&lt;/pre> &lt;a href="#fnref:5" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;/ol>
 &lt;/section>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
