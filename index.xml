@@ -77,10 +77,10 @@
 &lt;p>After binding port &lt;code>8088&lt;/code> to IIS server&amp;rsquo;s http service, there are addtional steps for unusual port other than &lt;code>80&lt;/code> and &lt;code>443&lt;/code>.
 Open firewall advance settings, add allow rules for &lt;code>8080&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm.&lt;/p>
 &lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
-&lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
+&lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
 &lt;ol>
 &lt;li>Pull image from docker&lt;/li>
 &lt;/ol>
@@ -109,7 +109,7 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>
 My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;h2 id="assign-ips-to-vm-3">Assign IPs to VM &lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/h2>
-&lt;p>To get double IPs in debian VM, first you need to add two network interfaces (here for example &lt;code>eth0&lt;/code> is external for Lan and the &lt;code>eth1&lt;/code> is internal to host) on hyper-v. Then login to the VM and add those lines to &lt;code>/etc/network/interfaces&lt;/code>, &lt;code>eth1&lt;/code>'s static ip is different from the host &lt;code>192.168.208.145&lt;/code> (like one number after) and mask is same as host&amp;rsquo;s &lt;strong>(you can find those in &lt;code>System Networking Control Panel&lt;/code>)&lt;/strong>:&lt;/p>
+&lt;p>To get double IPs in debian VM, first you need to add two network interfaces (here for example &lt;code>eth0&lt;/code> is external for Lan and the &lt;code>eth1&lt;/code> is internal to host) on hyper-v. Then login to the VM and add those lines to &lt;code>/etc/network/interfaces&lt;/code>, &lt;code>eth1&lt;/code>'s static ip is different from the host &lt;code>192.168.208.145&lt;/code> (like one number after) and mask is same as host&amp;rsquo;s &lt;strong>(you can find those in Windows Cmd &lt;code>ipconfig /all&lt;/code>)&lt;/strong>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
 iface eth0 inet dhcp
 auto eth1
@@ -117,7 +117,17 @@ iface eth1 inet static
 ip 192.168.208.146
 mask 255.255.255.240
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Apply changes by &lt;code>systemctl restart networking&lt;/code>. Type &lt;code>ip a&lt;/code> in command to find your IPs.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Windows&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;p>To add static IP in Windows, open Cmd(Administrator) and input:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cmd" data-lang="cmd">netsh interface ip set address name=&lt;span style="color:#e6db74">&amp;#34;vEthernet (Default Switch)&amp;#34;&lt;/span> static 192.168.208.145 255.255.255.240 none
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add this command to &lt;code>Manage&lt;/code>-&amp;gt;&lt;code>Scheduled Tasks&lt;/code>-&amp;gt;&lt;code>Create a Basic Task&lt;/code> and set it &lt;code>run as administrator&lt;/code> to get static ip rather than random one that Windows assign to on startup. Disable &lt;code>only start task when plug in power&lt;/code>.&lt;/p>
+&lt;p>By default, Hyper-v will give VM a random Mac which would make your router assign new ip for your VM&amp;rsquo;s external network on boot. Open VM&amp;rsquo;s settings, expand your external &lt;code>Network Adapter&lt;/code> and click on &lt;code>Advanced Features&lt;/code>. In &lt;code>Mac Address&lt;/code> select &lt;code>static&lt;/code> and input a Mac address.&lt;/p>
 &lt;h2 id="install-nginx-with-webdav-module">Install Nginx with Webdav module&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get install nginx-full -y
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="remove-default-page">Remove Default Page&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rm /etc/nginx/sites-enabled/default
@@ -227,12 +237,18 @@ sudo systemctl start nginx
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
 After a successfully login, open settings and click on the &lt;code>Users&lt;/code>. Create your own account with all permissions checked and delete the default &lt;code>guacadmin&lt;/code> account.&lt;/p>
 &lt;h2 id="add-connections">Add Connections&lt;/h2>
-&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.
-If you want to enhance VM server&amp;rsquo;s security, you can add a &lt;code>ssh&lt;/code> connection from docker to host. use &lt;code>ip a&lt;/code> to check &lt;code>docker0&lt;/code> host&amp;rsquo;s ip. Also, change the settings in &lt;code>/etc/ssh/sshd_config&lt;/code> by change &lt;code>port&lt;/code> and &lt;code>listenAddress&lt;/code>. Apply changes &lt;code>sudo systemctl restart sshd&lt;/code>:&lt;/p>
+&lt;p>Click on the &lt;code>New Connection&lt;/code> inside the &lt;code>Connections&lt;/code>. Fill the Name, Protocol, Hostname (&lt;strong>Better not to use ip&lt;/strong>), Port, Username, Password, Security Mode and check the &lt;code>Ignore server certificate&lt;/code>. Save the changes.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;p>If you want to enhance VM server&amp;rsquo;s security, you can add a &lt;code>ssh&lt;/code> connection from docker to host. use &lt;code>ip a&lt;/code> to check &lt;code>docker0&lt;/code> host&amp;rsquo;s ip. Also, change the settings in &lt;code>/etc/ssh/sshd_config&lt;/code> by change &lt;code>port&lt;/code> and &lt;code>listenAddress&lt;/code>. Apply changes &lt;code>sudo systemctl restart sshd&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Port &lt;span style="color:#ae81ff">25678&lt;/span>
 &lt;span style="color:#75715e"># same as docker0 in ip a&lt;/span>
 ListenAddress 172.18.0.1
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Browser&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 &lt;h2 id="expose-3389-to-hyper-v-only">Expose 3389 to Hyper-v only&lt;/h2>
 &lt;blockquote>
