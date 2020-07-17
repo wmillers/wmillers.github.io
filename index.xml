@@ -1,4 +1,4 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>用 Nginx 反代降低暴露 RDP 和 IIS 端口带来的风险</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Win 10 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文介绍如何用&lt;code>Nginx&lt;/code>反向代理减少暴露额外的端口带来的安全风险。&lt;code>Nginx&lt;/code>监听 443 端口传入的 HTTPS 协议内容，并按路径转发给 Docker 中的&lt;code>Guacamole&lt;/code>和 Hyper-v VM 外的 IIS 服务端。&lt;code>Guacamole&lt;/code>将宿主机的 RDP 服务转换成 HTML5 内容，不再需要服务端和向局域网开放 3389 端口。&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Mon, 13 Jul 2020 18:49:37 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>用 Nginx 反代降低暴露 RDP 和 IIS 端口带来的风险</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文介绍如何用&lt;code>Nginx&lt;/code>反向代理减少暴露额外的端口带来的安全风险。&lt;code>Nginx&lt;/code>监听 443 端口传入的 HTTPS 协议内容，并按路径转发给 Docker 中的&lt;code>Guacamole&lt;/code>和 Hyper-v VM 外的 IIS 服务端。&lt;code>Guacamole&lt;/code>将宿主机的 RDP 服务转换成 HTML5 内容，不再需要服务端和向局域网开放 3389 端口。&lt;/p>
 &lt;p>本文搭建的环境和程序如下&lt;/p>
 &lt;table>
 &lt;thead>
@@ -9,7 +9,7 @@
 &lt;/thead>
 &lt;tbody>
 &lt;tr>
-&lt;td>Win 10&lt;/td>
+&lt;td>Windows&lt;/td>
 &lt;td>Hyper-v, IIS Webserver&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -44,7 +44,7 @@
 &lt;tr>
 &lt;td>IIS Webserver&lt;/td>
 &lt;td>Other web app (Webdav)&lt;/td>
-&lt;td>Win 10&lt;/td>
+&lt;td>Windows&lt;/td>
 &lt;td>HTTP&lt;/td>
 &lt;td>192.168.208.145:8088/S4f_ &lt;!-- raw HTML omitted -->Hyper-v&lt;/td>
 &lt;/tr>
@@ -58,7 +58,7 @@
 &lt;tr>
 &lt;td>RDP&lt;/td>
 &lt;td>Microsoft remote desktop&lt;/td>
-&lt;td>Win 10&lt;/td>
+&lt;td>Windows&lt;/td>
 &lt;td>RDP&lt;/td>
 &lt;td>192.168.208.145:3389 &lt;!-- raw HTML omitted -->Hyper-v&lt;/td>
 &lt;/tr>
@@ -71,6 +71,9 @@
 &lt;/blockquote>
 &lt;p>As we use docker file here, the default user has been set to &lt;code>guacadmin&lt;/code> with password &lt;code>guacadmin&lt;/code>.&lt;/p>
 &lt;h1 id="open-firewall-for-iiss-unusual-port">Open Firewall for IIS&amp;rsquo;s Unusual Port&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Windows&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;p>After binding port &lt;code>8088&lt;/code> to IIS server&amp;rsquo;s http service, there are addtional steps for unusual port other than &lt;code>80&lt;/code> and &lt;code>443&lt;/code>.
 Open firewall advance settings, add allow rules for &lt;code>8080&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm.&lt;/p>
 &lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
@@ -100,11 +103,11 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> -v /root/guacamole:/config &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="nginx-url-rewrite">Nginx URL Rewrite&lt;/h1>
-&lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>
-My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
+&lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>
+My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;h2 id="assign-ips-to-vm-3">Assign IPs to VM &lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/h2>
 &lt;p>To get double IPs in debian VM, first you need to add two network interfaces (here for example &lt;code>eth0&lt;/code> is external for Lan and the &lt;code>eth1&lt;/code> is internal to host) on hyper-v. Then login to the VM and add those lines to &lt;code>/etc/network/interfaces&lt;/code>, &lt;code>eth1&lt;/code>'s static ip is different from the host &lt;code>192.168.208.145&lt;/code> (like one number after) and mask is same as host&amp;rsquo;s &lt;strong>(you can find those in &lt;code>System Networking Control Panel&lt;/code>)&lt;/strong>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
@@ -131,7 +134,7 @@ proxy_set_header Connection $http_connection;
 access_log off;
 proxy_pass http://127.0.0.1:8080/rdp/;
 &lt;span style="color:#f92672">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Win 10&amp;rsquo;s internal ip. I also changed the query string from client to IIS to prevent problems&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup> &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Windows&amp;rsquo;s internal ip. I also changed the query string from client to IIS to prevent problems&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup> &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e"># add in http&lt;/span>
 map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
 ~*&lt;span style="color:#f92672">(&lt;/span>https?:&lt;span style="color:#ae81ff">\/\/&lt;/span>&lt;span style="color:#f92672">)([&lt;/span>a-z0-9&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#ae81ff">\/&lt;/span>&lt;span style="color:#f92672">)(&lt;/span>.+&lt;span style="color:#f92672">)&lt;/span>$ http://192.168.208.145:8088/$3;
@@ -218,7 +221,7 @@ sudo systemctl start nginx
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl enable docker-win10rdp.service
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="edit-guacamole-settings">Edit Guacamole Settings&lt;/h1>
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;p>&lt;em>&lt;strong>In Browser&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;h2 id="add-account">Add Account&lt;/h2>
 &lt;p>Access &lt;code>Guacamole&lt;/code>'s web page using the ip address &lt;code>https://192.168.51.24/rdp&lt;/code> with &lt;code>guacadmin&lt;/code> for both username and password.&lt;br>
@@ -232,6 +235,9 @@ ListenAddress 172.18.0.1
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-on-connection">Test on Connection&lt;/h2>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 &lt;h2 id="expose-3389-to-hyper-v-only">Expose 3389 to Hyper-v only&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Windows&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
 &lt;p>Open firewall advance settings, add two allow rules for TCP and UDP port&lt;code>3389&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm. Disable old TCP and UDP port &lt;code>3389&lt;/code> allow rules.&lt;/p>
 &lt;h1 id="appendices">Appendices&lt;/h1>
 &lt;section class="footnotes" role="doc-endnotes">
@@ -242,7 +248,7 @@ ListenAddress 172.18.0.1
 &lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> change config of Guacamole now in its GUI control panel rather in its config file.&lt;/p>
 &lt;/blockquote>
 &lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
-Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Win 10&lt;/code> IP address or &lt;code>Hostname&lt;/code> (&lt;strong>recommend&lt;/strong>) connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
+Replace &lt;code>172.17.111.33&lt;/code> with your &lt;code>Windows&lt;/code> IP address or &lt;code>Hostname&lt;/code> (&lt;strong>recommend&lt;/strong>) connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>172.17.111.38&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
 In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains PASSWORD&amp;gt;&lt;/code> to hash your plain password.&lt;br>
 &lt;strong>/root/guacamole/user-mapping.xml&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;user-mapping&amp;gt;&lt;/span>
