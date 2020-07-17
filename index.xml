@@ -28,7 +28,7 @@
 &lt;tr>
 &lt;th>Program&lt;/th>
 &lt;th>Usage&lt;/th>
-&lt;th>Environment&lt;/th>
+&lt;th>Env&lt;/th>
 &lt;th>Protocol&lt;/th>
 &lt;th>Address&lt;/th>
 &lt;/tr>
@@ -101,7 +101,7 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> guapath
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="nginx-url-rewrite">Nginx URL Rewrite&lt;/h1>
 &lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>
-My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via &lt;code>Webdav&lt;/code>. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and &lt;code>Webdav&lt;/code> that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
@@ -131,7 +131,7 @@ proxy_set_header Connection $http_connection;
 access_log off;
 proxy_pass http://127.0.0.1:8080/rdp/;
 &lt;span style="color:#f92672">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS &lt;code>Webdav&lt;/code> url path, and &lt;code>192.168.208.145&lt;/code> with your Win 10&amp;rsquo;s internal ip. I also changed the query string from client to IIS to prevent problems&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup> &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Replace&lt;/strong> &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Win 10&amp;rsquo;s internal ip. I also changed the query string from client to IIS to prevent problems&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup> &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e"># add in http&lt;/span>
 map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
 ~*&lt;span style="color:#f92672">(&lt;/span>https?:&lt;span style="color:#ae81ff">\/\/&lt;/span>&lt;span style="color:#f92672">)([&lt;/span>a-z0-9&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#ae81ff">\/&lt;/span>&lt;span style="color:#f92672">)(&lt;/span>.+&lt;span style="color:#f92672">)&lt;/span>$ http://192.168.208.145:8088/$3;
@@ -233,6 +233,7 @@ ListenAddress 172.18.0.1
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
 &lt;h2 id="expose-3389-to-hyper-v-only">Expose 3389 to Hyper-v only&lt;/h2>
 &lt;p>Open firewall advance settings, add two allow rules for TCP and UDP port&lt;code>3389&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm. Disable old TCP and UDP port &lt;code>3389&lt;/code> allow rules.&lt;/p>
+&lt;h1 id="appendices">Appendices&lt;/h1>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
@@ -322,10 +323,10 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>Description:&lt;/strong>&lt;/em> related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>&lt;/p>
 &lt;/blockquote>
-&lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for &lt;code>Webdav&lt;/code> service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my &lt;code>Webdav&lt;/code> client, however, it contains bugs while sending requests to a proxyed server.
-For example, rclone sends method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server when rename a file while the query uri to rename without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. &lt;del>Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.&lt;/del>
-&lt;strong>Edit1:&lt;/strong> It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bugs of rclone. More information about this is in description above.
-&lt;strong>Edit2:&lt;/strong> Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, Destination header is an absolute URI. Convert it to relative is not the solution. The better way is to change the scheme and path to IIS backend.
+&lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for Webdav service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my Webdav client, however, it contains bugs while sending requests to a proxyed server.
+For example, rclone sends method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server when rename a file while the query uri to rename without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. &lt;del>Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.&lt;/del>&lt;br>
+&lt;strong>Edit1:&lt;/strong> It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bugs of rclone. More information about this is in description above.&lt;br>
+&lt;strong>Edit2:&lt;/strong> Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, Destination header is an absolute URI. Convert it to relative is not the solution. The better way is to change the scheme and path to IIS backend.&lt;br>
 &lt;strong>Edit3:&lt;/strong> &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (&lt;strong>should place in &lt;code>http&lt;/code> section&lt;/strong>) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxy &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li id="fn:5" role="doc-endnote">
