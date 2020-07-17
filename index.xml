@@ -66,7 +66,13 @@
 &lt;/table>
 &lt;h1 id="no-need-to-prepare-config-file">No Need To Prepare Config File&lt;/h1>
 &lt;p>More offcial Docs &lt;a href="guacamole.apache.org/doc/0.8.4/gug/configuring-guacamole.html#user-mapping">Here&lt;/a>&lt;/p>
-&lt;p>&lt;strong>This Part&lt;/strong> is for the native build therefore &lt;strong>SHOULD BE SKIPPED&lt;/strong>. As we use docker file here, the default user has been set to &lt;code>guacadmin&lt;/code> with password &lt;code>guacadmin&lt;/code>.&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>This Part&lt;/strong> is for the native build therefore &lt;strong>SHOULD BE SKIPPED&lt;/strong>.&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
+&lt;/blockquote>
+&lt;p>As we use docker file here, the default user has been set to &lt;code>guacadmin&lt;/code> with password &lt;code>guacadmin&lt;/code>.&lt;/p>
+&lt;h1 id="open-firewall-for-iiss-unusual-port">Open Firewall for IIS&amp;rsquo;s Unusual Port&lt;/h1>
+&lt;p>After binding port &lt;code>8088&lt;/code> to IIS server&amp;rsquo;s http service, there are addtional steps for unusual port other than &lt;code>80&lt;/code> and &lt;code>443&lt;/code>.
+Open firewall advance settings, add allow rules for &lt;code>8080&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm.&lt;/p>
 &lt;h1 id="install-guacamole-by-docker">Install Guacamole by Docker&lt;/h1>
 &lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
 &lt;blockquote>
