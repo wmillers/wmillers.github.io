@@ -164,7 +164,7 @@ mask 255.255.255.240
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get install nginx-full -y
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="remove-default-page">Remove Default Page&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Remove Default Page&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rm /etc/nginx/sites-enabled/default
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-proxy-config">Add Proxy Config&lt;/h2>
 &lt;p>Add those lines to your &lt;code>/etc/nginx/nginx.conf&lt;/code> file inside the &lt;code>server&lt;/code> section.
@@ -179,14 +179,16 @@ proxy_set_header Connection $http_connection;
 access_log off;
 proxy_pass http://127.0.0.1:8080/rdp/;
 &lt;span style="color:#f92672">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Windows&amp;rsquo;s internal ip. I also changed the query string from client to IIS to fix problems (it&amp;rsquo;s an &lt;strong>Nginx bug&lt;/strong> when reverse proxy a webdav request, especially when use &lt;code>MOVE&lt;/code> method, the &lt;code>Destination&lt;/code> header would be set as nginx&amp;rsquo;s address rather than IIS&amp;rsquo; &lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>) &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e"># add in http&lt;/span>
-map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Windows&amp;rsquo;s internal ip. I also changed the query string from client to IIS to fix problems (it&amp;rsquo;s an &lt;strong>Nginx bug&lt;/strong> when reverse proxy a webdav request, especially when use &lt;code>MOVE&lt;/code> method, the &lt;code>Destination&lt;/code> header would be set as nginx&amp;rsquo;s address rather than IIS&amp;rsquo; &lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>) &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.
+&lt;strong>add in http&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> map $http_destination $destination &lt;span style="color:#f92672">{&lt;/span>
 ~*&lt;span style="color:#f92672">(&lt;/span>https?:&lt;span style="color:#ae81ff">\/\/&lt;/span>&lt;span style="color:#f92672">)([&lt;/span>a-z0-9&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#ae81ff">\/&lt;/span>&lt;span style="color:#f92672">)(&lt;/span>.+&lt;span style="color:#f92672">)&lt;/span>$ http://192.168.208.145:8088/$3;
 default $http_destination;
 &lt;span style="color:#f92672">}&lt;/span>
-&lt;span style="color:#75715e"># add in server&lt;/span>
-location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>add in server&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> location /S4f_/ &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e"># allow webdav to max upload 4G&lt;/span>
+client_max_body_size 4096m;
 proxy_redirect off;
 proxy_buffering off;
 proxy_http_version 1.1;
@@ -291,12 +293,52 @@ RestartPreventExitStatus&lt;span style="color:#f92672">=&lt;/span>
 &lt;p>&lt;em>&lt;strong>In Browser&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;p>Back to &lt;code>Home&lt;/code>, click on the connection you just added. Check if everything is fine.&lt;/p>
+&lt;h1 id="more-security-stuff">More Security Stuff&lt;/h1>
 &lt;h2 id="expose-3389-to-hyper-v-only">Expose 3389 to Hyper-v only&lt;/h2>
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>In Windows&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;p>Open firewall advance settings, add two allow rules for TCP and UDP port&lt;code>3389&lt;/code>. In &lt;code>Scope&lt;/code> Remote IP address part, add ip range &lt;code>192.168.208.0&lt;/code> to &lt;code>192.168.208.255&lt;/code>. In &lt;code>Advance&lt;/code> Profiles part, check all three checkboxs and confirm. Disable old TCP and UDP port &lt;code>3389&lt;/code> allow rules.&lt;/p>
-&lt;h1 id="appendices">Appendices&lt;/h1>
+&lt;h2 id="fail-x00x03-to-ban">Fail x00/x03 to Ban&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;p>Install fail2ban&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get install fail2ban
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Edit your config file from template&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add your client ip to &lt;code>ignoreip&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">DEFAULT&lt;/span>]
+&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;span style="color:#a6e22e">ignoreip&lt;/span> = &lt;span style="color:#ae81ff">127.0&lt;/span>.&lt;span style="color:#ae81ff">0.1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">::&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#a6e22e">your&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">ip&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">address&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">here&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Modify default &lt;code>bantime&lt;/code>, &lt;code>findtime&lt;/code> and &lt;code>maxretry&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">&lt;span style="color:#75715e"># &amp;#34;bantime&amp;#34; is the number of seconds that a host is banned.&lt;/span>
+&lt;span style="color:#a6e22e">bantime&lt;/span> = &lt;span style="color:#ae81ff">24&lt;/span>&lt;span style="color:#a6e22e">h&lt;/span> &lt;span style="color:#75715e"># -1 means permanant&lt;/span>
+&lt;span style="color:#75715e"># A host is banned if it has generated &amp;#34;maxretry&amp;#34; during the last &amp;#34;findtime&amp;#34; &lt;/span>
+&lt;span style="color:#75715e"># seconds.&lt;/span>
+&lt;span style="color:#a6e22e">findtime&lt;/span> = &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#a6e22e">m&lt;/span>
+&lt;span style="color:#75715e"># &amp;#34;maxretry&amp;#34; is the number of failures before a host get banned.&lt;/span>
+&lt;span style="color:#a6e22e">maxretry&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create your special jail in &lt;code>jail.local&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">nginx&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">x0x&lt;/span>]
+&lt;span style="color:#a6e22e">enabled&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> = &lt;span style="color:#a6e22e">http&lt;/span>,&lt;span style="color:#a6e22e">https&lt;/span>
+&lt;span style="color:#a6e22e">filter&lt;/span> = &lt;span style="color:#a6e22e">nginx&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">x0x&lt;/span>
+&lt;span style="color:#a6e22e">logpath&lt;/span> = &lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">var&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">log&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">nginx&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">access&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create filter for Nginx x0x (like 403) error&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo nano /etc/fail2ban/filter.d/nginx-x0x.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">[&lt;span style="color:#a6e22e">Definition&lt;/span>]
+&lt;span style="color:#a6e22e">failregex&lt;/span> = &lt;span style="color:#960050;background-color:#1e0010">^&amp;lt;&lt;/span>&lt;span style="color:#a6e22e">HOST&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span>.&lt;span style="color:#960050;background-color:#1e0010">*&lt;/span>&lt;span style="color:#e6db74">&amp;#34;(GET|POST|HEAD).*&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">(&lt;/span>&lt;span style="color:#ae81ff">404&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">|&lt;/span>&lt;span style="color:#ae81ff">444&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">|&lt;/span>&lt;span style="color:#ae81ff">403&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">|&lt;/span>&lt;span style="color:#ae81ff">400&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">)&lt;/span> .&lt;span style="color:#960050;background-color:#1e0010">*$&lt;/span>
+&lt;span style="color:#a6e22e">ignoreregex&lt;/span> =
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can test your regex here&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">fail2ban-regex /var/log/nginx/access.log /etc/fail2ban/filter.d/nginx-x0x.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Restart &lt;code>fail2ban&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl restart fail2ban
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To see status&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo fail2ban-client status nginx-x0x
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="appendices">Appendices&lt;/h1>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
