@@ -77,14 +77,14 @@ openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.c
 &lt;td>Other web app (Webdav)&lt;/td>
 &lt;td>Windows&lt;/td>
 &lt;td>HTTP&lt;/td>
-&lt;td>192.168.208.145:8088/S4f_ Hyper-v&lt;/td>
+&lt;td>192.168.208.145:8088/S4f_/ Hyper-v&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
 &lt;td>HTML5 RDP server&lt;/td>
-&lt;td>Hyper-v&lt;/td>
+&lt;td>Hyper-v (Docker)&lt;/td>
 &lt;td>HTTP&lt;/td>
-&lt;td>127.0.0.1:8080/rdp Hyper-v&lt;/td>
+&lt;td>127.0.0.1:8080/rdp/ Hyper-v&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>RDP&lt;/td>
@@ -380,20 +380,20 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/li>
 &lt;li id="fn:4" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Important:&lt;/strong>&lt;/em> there is a bug when Nginx handle reverse proxy to a webdav server, related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Important:&lt;/strong>&lt;/em> there is a bug when Nginx handle reverse proxy to a webdav server. Related: &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
 &lt;/blockquote>
-&lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for Webdav service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my Webdav client, however, it contains bugs while sending requests to a proxyed server.
-For example, rclone sends method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server when rename a file while the query uri to rename without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. &lt;del>Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.&lt;/del>&lt;br>
-&lt;strong>Edit1:&lt;/strong> It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bugs of rclone. More information about this is in description above.&lt;br>
-&lt;strong>Edit2:&lt;/strong> Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, Destination header is an absolute URI. Convert it to relative is not the solution. The better way is to change the scheme and path to IIS backend.&lt;br>
-&lt;strong>Edit3:&lt;/strong> &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (&lt;strong>should place in &lt;code>http&lt;/code> section&lt;/strong>) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxy &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for Webdav service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my Webdav client, &lt;del>however, it contains bugs while sending requests to a proxyed server&lt;/del>.
+For example, rclone sends method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server when rename a file while the correct query uri without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. &lt;del>Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.&lt;/del>&lt;br>
+&lt;strong>Edit1:&lt;/strong> It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bugs of rclone. More information about this is in description above. The Webdav server will check the &lt;code>Destination&lt;/code> header in query uri if it&amp;rsquo;s match the internal server.
+&lt;strong>Edit2:&lt;/strong> Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, Destination header is an absolute URI. Convert it to relative is not the solution. The better way is to rewrite the scheme and path to IIS backend.&lt;br>
+&lt;strong>Edit3:&lt;/strong> &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted string &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (&lt;strong>should place in &lt;code>http&lt;/code> section&lt;/strong>) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxyed &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li id="fn:5" role="doc-endnote">
 &lt;blockquote>
 &lt;p>&lt;em>&lt;strong>Optional:&lt;/strong>&lt;/em> set basic auth for Nginx.&lt;/p>
 &lt;/blockquote>
 &lt;p>Generate your &lt;code>conf/userpass.txt&lt;/code> file by command &lt;code>htpasswd&lt;/code> or online &lt;code>MD5 htpasswd&lt;/code> generator. Text inside are like &lt;code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0&lt;/code>.
-Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code>.&lt;/p>
+Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code> section.&lt;/p>
 &lt;pre>&lt;code> auth_basic &amp;quot;Auth&amp;quot;;
 auth_basic_user_file userpass.txt;
 &lt;/code>&lt;/pre> &lt;a href="#fnref:5" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
