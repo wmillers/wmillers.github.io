@@ -30,7 +30,7 @@ openssl req -new -keyout user.key -out user.csr -newkey rsa:4096 -sha256 -nodes 
 openssl x509 -req -days &lt;span style="color:#ae81ff">3650&lt;/span> -in user.csr -CA CA.crt -CAkey CA.key -CAcreateserial -out user.crt
 openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.crt
 &lt;/code>&lt;/pre>&lt;/div>- //wmillers.github.io/posts/self-signed-ca-server-cert/ - wmillers</description></item><item><title>用 Nginx 反代降低暴露 RDP 和 IIS 端口带来的风险</title><link>//wmillers.github.io/posts/docker-guacamole-rdp/</link><pubDate>Mon, 13 Jul 2020 18:49:37 +0800</pubDate><guid>//wmillers.github.io/posts/docker-guacamole-rdp/</guid><description>源 //wmillers.github.io/posts/docker-guacamole-rdp/ -&lt;p>Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口，而是通过&lt;code>Remote Desktop Gateway&lt;/code>这个默认存在于rdp客户端的认证通道或者是通过代理来避免端口直接暴露。以上两种方式前者较麻烦，后者则造成每次连接远程桌面都要开启代理，都不太方便。本文介绍如何用&lt;code>Nginx&lt;/code>反向代理减少暴露额外的端口带来的安全风险。&lt;code>Nginx&lt;/code>监听 443 端口传入的 HTTPS 协议内容，并按路径转发给 Docker 中的&lt;code>Guacamole&lt;/code>和 Hyper-v VM 外的 IIS 服务端。&lt;code>Guacamole&lt;/code>将宿主机的 RDP 服务转换成 HTML5 内容，不再需要服务端和向局域网开放 3389 端口。&lt;/p>
-&lt;p>本文搭建的环境和程序如下&lt;/p>
+&lt;p>&lt;strong>本文基于如下环境和程序&lt;/strong>&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -62,7 +62,7 @@ openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.c
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;p>按外部访问流程排序&lt;/p>
+&lt;p>&lt;strong>各程序服务按外部访问流程排序&lt;/strong>&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
