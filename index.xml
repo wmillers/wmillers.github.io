@@ -36,24 +36,29 @@ openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.c
 &lt;tr>
 &lt;th>Environment&lt;/th>
 &lt;th>Contains&lt;/th>
+&lt;th>&lt;/th>
 &lt;/tr>
 &lt;/thead>
 &lt;tbody>
 &lt;tr>
 &lt;td>Windows&lt;/td>
-&lt;td>Hyper-v, IIS Webserver 10.0&lt;/td>
+&lt;td>IIS Webserver 10.0&lt;/td>
+&lt;td>Hyper-v (VM)&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Hyper-v (VM)&lt;/td>
 &lt;td>Debian 10 (Buster)&lt;/td>
+&lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Debian 10&lt;/td>
-&lt;td>Docker, Nginx 1.14.2&lt;/td>
+&lt;td>Nginx 1.14.2&lt;/td>
+&lt;td>Docker&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Docker&lt;/td>
 &lt;td>Apache Guacamole 1.2.0&lt;/td>
+&lt;td>&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -72,30 +77,30 @@ openssl pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile CA.c
 &lt;tr>
 &lt;td>Nginx&lt;/td>
 &lt;td>HTTPS reverse proxy&lt;/td>
-&lt;td>Hyper-v&lt;/td>
+&lt;td>Hyper-v (VM)&lt;/td>
 &lt;td>HTTPS&lt;/td>
-&lt;td>192.168.51.118:443 Lan 192.168.208.146 Hyper-v&lt;/td>
+&lt;td>192.168.51.118:443 Lan 192.168.208.146 VM&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>IIS Webserver&lt;/td>
 &lt;td>Other web app (Webdav)&lt;/td>
 &lt;td>Windows&lt;/td>
 &lt;td>HTTP&lt;/td>
-&lt;td>192.168.208.145:8088/S4f_/ Hyper-v&lt;/td>
+&lt;td>192.168.208.145:8088/S4f_/ VM&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Guacamole&lt;/td>
 &lt;td>HTML5 RDP server&lt;/td>
-&lt;td>Hyper-v (Docker)&lt;/td>
+&lt;td>Hyper-v (VM Docker)&lt;/td>
 &lt;td>HTTP&lt;/td>
-&lt;td>127.0.0.1:8080/rdp/ Hyper-v&lt;/td>
+&lt;td>127.0.0.1:8080/rdp/ VM&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>RDP&lt;/td>
 &lt;td>Microsoft remote desktop&lt;/td>
 &lt;td>Windows&lt;/td>
 &lt;td>RDP&lt;/td>
-&lt;td>192.168.208.145:3389 Hyper-v&lt;/td>
+&lt;td>192.168.208.145:3389 VM&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -314,10 +319,10 @@ sudo nano /etc/fail2ban/jail.local
 &lt;span style="color:#a6e22e">ignoreip&lt;/span> = &lt;span style="color:#ae81ff">127.0&lt;/span>.&lt;span style="color:#ae81ff">0.1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">::&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#a6e22e">your&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">ip&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">address&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">-&lt;/span>&lt;span style="color:#a6e22e">here&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Modify default &lt;code>bantime&lt;/code>, &lt;code>findtime&lt;/code> and &lt;code>maxretry&lt;/code>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-toml" data-lang="toml">&lt;span style="color:#75715e"># &amp;#34;bantime&amp;#34; is the number of seconds that a host is banned.&lt;/span>
-&lt;span style="color:#a6e22e">bantime&lt;/span> = &lt;span style="color:#ae81ff">24&lt;/span>&lt;span style="color:#a6e22e">h&lt;/span> &lt;span style="color:#75715e"># -1 means permanant&lt;/span>
+&lt;span style="color:#a6e22e">bantime&lt;/span> = &lt;span style="color:#ae81ff">48&lt;/span>&lt;span style="color:#a6e22e">h&lt;/span> &lt;span style="color:#75715e"># -1 means permanant&lt;/span>
 &lt;span style="color:#75715e"># A host is banned if it has generated &amp;#34;maxretry&amp;#34; during the last &amp;#34;findtime&amp;#34; &lt;/span>
 &lt;span style="color:#75715e"># seconds.&lt;/span>
-&lt;span style="color:#a6e22e">findtime&lt;/span> = &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#a6e22e">m&lt;/span>
+&lt;span style="color:#a6e22e">findtime&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>&lt;span style="color:#a6e22e">m&lt;/span>
 &lt;span style="color:#75715e"># &amp;#34;maxretry&amp;#34; is the number of failures before a host get banned.&lt;/span>
 &lt;span style="color:#a6e22e">maxretry&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Create your special jail in &lt;code>jail.local&lt;/code>&lt;/p>
@@ -338,6 +343,8 @@ sudo nano /etc/fail2ban/jail.local
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo systemctl restart fail2ban
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To see status&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo fail2ban-client status nginx-x0x
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To rescue from jail&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo fail2ban-client set nginx-x0x unbanip &amp;lt;ip&amp;gt;
 &lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="appendices">Appendices&lt;/h1>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
