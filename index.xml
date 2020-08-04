@@ -897,7 +897,7 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$&lt;/p>
 &lt;/ul>
 &lt;/li>
 &lt;/ul>
-&lt;p>flow
+&lt;pre>&lt;code>flow
 st=&amp;gt;start: Start
 op=&amp;gt;operation: Your Operation
 cond=&amp;gt;condition: Yes or No?
@@ -906,11 +906,5 @@ st-&amp;gt;op-&amp;gt;cond
 cond(yes)-&amp;gt;e
 cond(no)-&amp;gt;op
 This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
-2020-07-01    
-This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
-2020-07-01    
-This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
-2020-07-01    
-This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
-2020-07-01    &lt;/p>
-- //wmillers.github.io/posts/my-first-post/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t/</guid><description>源 //wmillers.github.io/test/t/ -- //wmillers.github.io/test/t/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t4564/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t4564/</guid><description>源 //wmillers.github.io/test/t4564/ -- //wmillers.github.io/test/t4564/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t629/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t629/</guid><description>源 //wmillers.github.io/test/t629/ -- //wmillers.github.io/test/t629/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t7183/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t7183/</guid><description>源 //wmillers.github.io/test/t7183/ -- //wmillers.github.io/test/t7183/ - wmillers</description></item></channel></rss>
+2020-07-01
+&lt;/code>&lt;/pre>- //wmillers.github.io/posts/my-first-post/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t/</guid><description>源 //wmillers.github.io/test/t/ -- //wmillers.github.io/test/t/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t4564/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t4564/</guid><description>源 //wmillers.github.io/test/t4564/ -- //wmillers.github.io/test/t4564/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t629/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t629/</guid><description>源 //wmillers.github.io/test/t629/ -- //wmillers.github.io/test/t629/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t7183/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t7183/</guid><description>源 //wmillers.github.io/test/t7183/ -- //wmillers.github.io/test/t7183/ - wmillers</description></item></channel></rss>
