@@ -351,7 +351,7 @@ sudo nano /etc/fail2ban/jail.local
 &lt;ol>
 &lt;li id="fn:1" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;br>
+&lt;p>&lt;strong>Deprecated&lt;/strong>&lt;br>
 Changing the config of Guacamole is now in its GUI control panel instead of in its config file.&lt;/p>
 &lt;/blockquote>
 &lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
@@ -383,7 +383,7 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:2" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;br>
+&lt;p>&lt;strong>Deprecated&lt;/strong>&lt;br>
 Use nginx reverse proxy instead because ARR&amp;rsquo;s lack of Websocket support.&lt;/p>
 &lt;/blockquote>
 &lt;p>&lt;strong>Install Application Request Routing (ARR) Module&lt;/strong>&lt;br>
@@ -429,14 +429,14 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:3" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>&lt;br>
+&lt;p>&lt;strong>Deprecated&lt;/strong>&lt;br>
 The hostname that Hyper-v provided is not stable. It&amp;rsquo;s better set static ip both manually.&lt;/p>
 &lt;/blockquote>
 &lt;p>The old host-accessed-by-hostname (&lt;code>HOSTNAME.mshome.net&lt;/code>) plan isn&amp;rsquo;t unstable enough than assigning static ip to both host &lt;code>192.168.208.145&lt;/code> and VM &lt;code>192.168.208.146&lt;/code>. &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li id="fn:4" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Important&lt;/strong>&lt;/em>&lt;br>
+&lt;p>&lt;strong>Important&lt;/strong>&lt;br>
 There is a &lt;strong>bug&lt;/strong> when Nginx handle reverse proxy to a webdav server. Related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
 &lt;/blockquote>
 &lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for webdav service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my Webdav client~~, however, it contains bugs while sending requests to a proxyed server~~.
@@ -447,7 +447,7 @@ For example, &lt;code>rclone&lt;/code> sends webdav method &lt;code>MOVE&lt;/cod
 &lt;/li>
 &lt;li id="fn:5" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Optional&lt;/strong>&lt;/em>&lt;br>
+&lt;p>&lt;strong>Optional&lt;/strong>&lt;br>
 Set basic auth for Nginx.&lt;/p>
 &lt;/blockquote>
 &lt;p>Generate your &lt;code>conf/userpass.txt&lt;/code> file by command &lt;code>htpasswd&lt;/code> or online &lt;code>MD5 htpasswd&lt;/code> generator. Text inside are like &lt;code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0&lt;/code>.
