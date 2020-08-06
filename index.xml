@@ -345,13 +345,14 @@ sudo nano /etc/fail2ban/jail.local
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo fail2ban-client status nginx-x0x
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To rescue from jail&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo fail2ban-client set nginx-x0x unbanip &amp;lt;ip&amp;gt;
-&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="appendix">Appendix&lt;/h1>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="appendix">APPENDIX&lt;/h1>
 &lt;section class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
 &lt;li id="fn:1" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> changing the config of Guacamole is now in its GUI control panel instead of in its config file.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>
+Changing the config of Guacamole is now in its GUI control panel instead of in its config file.&lt;/p>
 &lt;/blockquote>
 &lt;p>First, prepare the config file that will be used by &lt;code>guacamole&lt;/code>.&lt;br>
 Replace &lt;code>192.168.208.145&lt;/code> with your &lt;code>Windows&lt;/code> IP address or &lt;code>Hostname&lt;/code> (&lt;strong>not recommend&lt;/strong>) connected to the &lt;code>Hyper-v&lt;/code> (as &lt;code>192.168.208.146&lt;/code> is the VM&amp;rsquo;s IP that &lt;code>Hyper-v&lt;/code> assigned to). Also don&amp;rsquo;t forget to change the &lt;code>username&lt;/code> and &lt;code>password (md5)&lt;/code>.&lt;br>
@@ -382,7 +383,8 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:2" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> use nginx reverse proxy instead because arr&amp;rsquo;s lack of Websocket support.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>
+Use nginx reverse proxy instead because ARR&amp;rsquo;s lack of Websocket support.&lt;/p>
 &lt;/blockquote>
 &lt;p>&lt;strong>Install Application Request Routing (ARR) Module&lt;/strong>&lt;br>
 Install &lt;code>ARR 3.0&lt;/code> for &lt;code>Reverse Proxy&lt;/code> support. You can install the ARR module directly from the location: &lt;a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0&lt;/a>.&lt;/p>
@@ -427,13 +429,15 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:3" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Deprecated:&lt;/strong>&lt;/em> the hostname that Hyper-v provided is not stable. It&amp;rsquo;s better set static ip both manually.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Deprecated&lt;/strong>&lt;/em>
+The hostname that Hyper-v provided is not stable. It&amp;rsquo;s better set static ip both manually.&lt;/p>
 &lt;/blockquote>
 &lt;p>The old host-accessed-by-hostname (&lt;code>HOSTNAME.mshome.net&lt;/code>) plan isn&amp;rsquo;t unstable enough than assigning static ip to both host &lt;code>192.168.208.145&lt;/code> and VM &lt;code>192.168.208.146&lt;/code>. &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li id="fn:4" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Important:&lt;/strong>&lt;/em> there is a &lt;strong>bug&lt;/strong> when Nginx handle reverse proxy to a webdav server. Related: &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Important&lt;/strong>&lt;/em>
+There is a &lt;strong>bug&lt;/strong> when Nginx handle reverse proxy to a webdav server. Related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
 &lt;/blockquote>
 &lt;p>In Nginx&amp;rsquo;s reverse proxy part &lt;code>S4f_&lt;/code>, I add extra filter to change query uri for webdav service. I&amp;rsquo;m using &lt;code>rclone&lt;/code> as my Webdav client~~, however, it contains bugs while sending requests to a proxyed server~~.
 For example, &lt;code>rclone&lt;/code> sends webdav method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server to rename a file while the correct query uri without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. ~~Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.~~&lt;br>
@@ -443,7 +447,8 @@ For example, &lt;code>rclone&lt;/code> sends webdav method &lt;code>MOVE&lt;/cod
 &lt;/li>
 &lt;li id="fn:5" role="doc-endnote">
 &lt;blockquote>
-&lt;p>&lt;em>&lt;strong>Optional:&lt;/strong>&lt;/em> set basic auth for Nginx.&lt;/p>
+&lt;p>&lt;em>&lt;strong>Optional&lt;/strong>&lt;/em>
+Set basic auth for Nginx.&lt;/p>
 &lt;/blockquote>
 &lt;p>Generate your &lt;code>conf/userpass.txt&lt;/code> file by command &lt;code>htpasswd&lt;/code> or online &lt;code>MD5 htpasswd&lt;/code> generator. Text inside are like &lt;code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0&lt;/code>.
 Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code> section.&lt;/p>
