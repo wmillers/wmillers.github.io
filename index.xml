@@ -112,19 +112,18 @@ Open firewall advance settings, add allow rules for &lt;code>8080&lt;/code>. In 
 &lt;/blockquote>
 &lt;p>&lt;a href="//hub.docker.com/r/oznu/guacamole">Docker Site&lt;/a> and &lt;a href="//github.com/oznu/docker-guacamole">uploader&amp;rsquo;s Github&lt;/a>&lt;/p>
 &lt;ol>
-&lt;li>Pull image from docker&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker pull oznu/guacamole
-&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
-&lt;li>Build a &lt;code>Dockerfile&lt;/code> which is used for changing base url.
-Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the place where you put the &lt;code>Dockerfile&lt;/code> to bulid a new image.&lt;/li>
+&lt;li>Add those text to a &lt;code>Dockerfile&lt;/code> which is used for changing base url.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/li>
 &lt;/ol>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> oznu/guacamole:latest&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -x &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/ROOT &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mv &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/ROOT.war &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/rdp.war&lt;span style="color:#960050;background-color:#1e0010">
-&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>Run command at the place where you put the &lt;code>Dockerfile&lt;/code> to bulid a new image.&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker build -t guapath .
+&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
 &lt;li>Run the container (replace &lt;code>/root/guacamole&lt;/code> with your config directory which should &lt;code>mkdir&lt;/code> first when new build) from your new-built image.&lt;/li>
 &lt;/ol>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run -d &lt;span style="color:#ae81ff">\
@@ -137,8 +136,8 @@ Run &lt;strong>&lt;code>docker build -t guapath .&lt;/code>&lt;/strong> at the p
 &lt;p>&lt;em>&lt;strong>In Hyper-v (Debian10)&lt;/strong>&lt;/em>&lt;/p>
 &lt;/blockquote>
 &lt;p>&lt;a href="https://guacamole.apache.org/doc/gug/proxying-guacamole.html#nginx">Offcial Document&lt;/a>&lt;/p>
-&lt;p>My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
-&lt;h2 id="assign-ips-to-vm-3">Assign IPs to VM &lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/h2>
+&lt;p>My original plan is to use &lt;code>IIS ARR3.0&lt;/code> module to achive the URL rewrite purpose as this IIS webserver also do the job of sharing my files in Lan via Webdav. But after a query online, I find out that the support of &lt;code>Websocket&lt;/code> in IIS which &lt;code>Guacamole&lt;/code> needed to communicate seems lack. Therefore I use &lt;code>Nginx&lt;/code> to do reverse proxy both for &lt;code>Guacamole&lt;/code> in &lt;code>Hyper-V&lt;/code> and Webdav that host on IIS.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/p>
+&lt;h2 id="assign-ips-to-vm-4">Assign IPs to VM &lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>&lt;/h2>
 &lt;p>To get double IPs in debian VM, first you need to add two network interfaces (here for example &lt;code>eth0&lt;/code> is external for Lan and the &lt;code>eth1&lt;/code> is internal to host) on hyper-v. Then login to the VM and add those lines to &lt;code>/etc/network/interfaces&lt;/code>, &lt;code>eth1&lt;/code>'s static ip is different from the host &lt;code>192.168.208.145&lt;/code> (like one number after) and mask is same as host&amp;rsquo;s (&lt;strong>you can find those in Windows Cmd &lt;code>ipconfig /all&lt;/code>&lt;/strong>). This internal ip is related to &lt;code>firewall&lt;/code> settings in Windows so you need to assign one manually to access the host Windows:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">auto eth0
 iface eth0 inet dhcp
@@ -174,7 +173,7 @@ Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code>'s url path
 &lt;span style="color:#f92672">access_log&lt;/span> &lt;span style="color:#66d9ef">off&lt;/span>;
 &lt;span style="color:#f92672">proxy_pass&lt;/span> &lt;span style="color:#e6db74">http://127.0.0.1:8080/rdp/&lt;/span>;
 }
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Windows&amp;rsquo;s internal ip. I also changed the query string from client to IIS to fix problems (it&amp;rsquo;s an &lt;strong>Nginx bug&lt;/strong> when reverse proxy a webdav request, especially when use &lt;code>MOVE&lt;/code> method, the &lt;code>Destination&lt;/code> header would be set as nginx&amp;rsquo;s address rather than IIS&amp;rsquo; &lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>) &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;br>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>S4f_&lt;/code> with your IIS Webdav url path, and &lt;code>192.168.208.145&lt;/code> with your Windows&amp;rsquo;s internal ip. I also changed the query string from client to IIS to fix problems (it&amp;rsquo;s an &lt;strong>Nginx bug&lt;/strong> when reverse proxy a webdav request, especially when use &lt;code>MOVE&lt;/code> method, the &lt;code>Destination&lt;/code> header would be set as nginx&amp;rsquo;s address rather than IIS&amp;rsquo; &lt;sup id="fnref:5">&lt;a href="#fn:5" class="footnote-ref" role="doc-noteref">5&lt;/a>&lt;/sup>) &lt;del>by &lt;code>if set&lt;/code>&lt;/del>.&lt;br>
 &lt;strong>add in http&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx"> &lt;span style="color:#66d9ef">map&lt;/span> $http_destination $destination {
 &lt;span style="color:#f92672">~*(https?:\/\/)([a-z0-9\.]+\/)(.+)$&lt;/span> &lt;span style="color:#e6db74">http://192.168.208.145:8088/&lt;/span>$3;
@@ -200,7 +199,7 @@ Replace &lt;code>rdp&lt;/code> with your &lt;code>guacamole&lt;/code>'s url path
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="config-https-and-auth">Config HTTPS and Auth&lt;/h2>
 &lt;p>About how to generate self-signed certificate, you can refer to &lt;a href="../self-signed-ca-server-cert">Here&lt;/a>.&lt;br>
 Copy your &lt;code>server.crt&lt;/code> and &lt;code>server.key&lt;/code> to &lt;code>nginx/&lt;/code> folder (use &lt;code>scp /path/to/file username@ip.ip.ip.ip:/path/to/destination&lt;/code> or &lt;code>Winscp&lt;/code>).&lt;br>
-You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>&lt;sup id="fnref:5">&lt;a href="#fn:5" class="footnote-ref" role="doc-noteref">5&lt;/a>&lt;/sup>.&lt;br>
+You can add extra auth for anyone who visit the site by nginx&amp;rsquo;s &lt;code>basic auth&lt;/code>&lt;sup id="fnref:6">&lt;a href="#fn:6" class="footnote-ref" role="doc-noteref">6&lt;/a>&lt;/sup>.&lt;br>
 Replace &lt;code>server&lt;/code> config with following lines.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx">&lt;span style="color:#66d9ef">server&lt;/span> {
 &lt;span style="color:#f92672">listen&lt;/span> &lt;span style="color:#ae81ff">443&lt;/span> &lt;span style="color:#e6db74">ssl&lt;/span> &lt;span style="color:#e6db74">http2&lt;/span>;
@@ -373,6 +372,92 @@ In &lt;code>Debian&lt;/code>, you can use &lt;code>md5sum &amp;lt;File contains 
 &lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;li id="fn:2" role="doc-endnote">
 &lt;blockquote>
+&lt;p>&lt;strong>Failed&lt;/strong>&lt;br>
+Failed on &lt;code>COPY root /&lt;/code>.&lt;/p>
+&lt;/blockquote>
+&lt;p>(This file is originated from &lt;a href="//github.com/oznu/docker-guacamole/">&lt;code>oznu/guacamole&lt;/code>&lt;/a>, however the path in &lt;code>curl -SLo ${CATALINA_HOME}/webapps/ROOT.war&lt;/code> has been changed to &lt;code>${CATALINA_HOME}/webapps/rdp.war&lt;/code> which is same to &lt;code>https://.../rdp&lt;/code>).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> library/tomcat:9-jre11&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ARCH&lt;span style="color:#f92672">=&lt;/span>amd64 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>GUAC_VER&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>.2.0 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>GUACAMOLE_HOME&lt;span style="color:#f92672">=&lt;/span>/app/guacamole &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>PG_MAJOR&lt;span style="color:#f92672">=&lt;/span>9.6 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>PGDATA&lt;span style="color:#f92672">=&lt;/span>/config/postgres &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>POSTGRES_USER&lt;span style="color:#f92672">=&lt;/span>guacamole &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>POSTGRES_DB&lt;span style="color:#f92672">=&lt;/span>guacamole_db&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Apply the s6-overlay&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> curl -SLO &lt;span style="color:#e6db74">&amp;#34;https://github.com/just-containers/s6-overlay/releases/download/v1.20.0.0/s6-overlay-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ARCH&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.tar.gz&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> tar -xzf s6-overlay-&lt;span style="color:#e6db74">${&lt;/span>ARCH&lt;span style="color:#e6db74">}&lt;/span>.tar.gz -C / &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> tar -xzf s6-overlay-&lt;span style="color:#e6db74">${&lt;/span>ARCH&lt;span style="color:#e6db74">}&lt;/span>.tar.gz -C /usr ./bin &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf s6-overlay-&lt;span style="color:#e6db74">${&lt;/span>ARCH&lt;span style="color:#e6db74">}&lt;/span>.tar.gz &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mkdir -p &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/lib &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/extensions&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> ${GUACAMOLE_HOME}&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Install dependencies&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> libcairo2-dev libjpeg62-turbo-dev libpng-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> libossp-uuid-dev libavcodec-dev libavutil-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> libswscale-dev freerdp2-dev libfreerdp-client2-2 libpango1.0-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> libssh2-1-dev libtelnet-dev libvncserver-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> libpulse-dev libssl-dev libvorbis-dev libwebp-dev libwebsockets-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ghostscript postgresql-&lt;span style="color:#e6db74">${&lt;/span>PG_MAJOR&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Link FreeRDP to where guac expects it to be&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$ARCH&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;armhf&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ln -s /usr/local/lib/freerdp /usr/lib/arm-linux-gnueabihf/freerdp &lt;span style="color:#f92672">||&lt;/span> exit &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$ARCH&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;amd64&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ln -s /usr/local/lib/freerdp /usr/lib/x86_64-linux-gnu/freerdp &lt;span style="color:#f92672">||&lt;/span> exit &lt;span style="color:#ae81ff">0&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Install guacamole-server&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> curl -SLO &lt;span style="color:#e6db74">&amp;#34;http://apache.org/dyn/closer.cgi?action=download&amp;amp;filename=guacamole/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/source/guacamole-server-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.tar.gz&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> tar -xzf guacamole-server-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cd guacamole-server-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ./configure &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> make -j&lt;span style="color:#66d9ef">$(&lt;/span>getconf _NPROCESSORS_ONLN&lt;span style="color:#66d9ef">)&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> make install &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cd .. &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf guacamole-server-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz guacamole-server-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ldconfig&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Install guacamole-client and postgres auth adapter&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -x &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/ROOT &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -SLo &lt;span style="color:#e6db74">${&lt;/span>CATALINA_HOME&lt;span style="color:#e6db74">}&lt;/span>/webapps/rdp.war &lt;span style="color:#e6db74">&amp;#34;http://apache.org/dyn/closer.cgi?action=download&amp;amp;filename=guacamole/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/binary/guacamole-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.war&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -SLo &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/lib/postgresql-42.1.4.jar &lt;span style="color:#e6db74">&amp;#34;https://jdbc.postgresql.org/download/postgresql-42.1.4.jar&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -SLO &lt;span style="color:#e6db74">&amp;#34;http://apache.org/dyn/closer.cgi?action=download&amp;amp;filename=guacamole/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/binary/guacamole-auth-jdbc-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.tar.gz&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> tar -xzf guacamole-auth-jdbc-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cp -R guacamole-auth-jdbc-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>/postgresql/guacamole-auth-jdbc-postgresql-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.jar &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/extensions/ &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cp -R guacamole-auth-jdbc-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>/postgresql/schema &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/ &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf guacamole-auth-jdbc-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span> guacamole-auth-jdbc-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Add optional extensions&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -xe &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mkdir &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/extensions-available &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> i in auth-ldap auth-duo auth-header auth-cas auth-openid auth-quickconnect auth-totp; &lt;span style="color:#66d9ef">do&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;http://apache.org/dyn/closer.cgi?action=download&amp;amp;filename=guacamole/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/binary/guacamole-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.tar.gz&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -SLO &lt;span style="color:#e6db74">&amp;#34;http://apache.org/dyn/closer.cgi?action=download&amp;amp;filename=guacamole/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/binary/guacamole-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.tar.gz&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> tar -xzf guacamole-&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cp guacamole-&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>/guacamole-&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.jar &lt;span style="color:#e6db74">${&lt;/span>GUACAMOLE_HOME&lt;span style="color:#e6db74">}&lt;/span>/extensions-available/ &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf guacamole-&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span> guacamole-&lt;span style="color:#e6db74">${&lt;/span>i&lt;span style="color:#e6db74">}&lt;/span>-&lt;span style="color:#e6db74">${&lt;/span>GUAC_VER&lt;span style="color:#e6db74">}&lt;/span>.tar.gz &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>;&lt;span style="color:#66d9ef">done&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> PATH&lt;span style="color:#f92672">=&lt;/span>/usr/lib/postgresql/&lt;span style="color:#e6db74">${&lt;/span>PG_MAJOR&lt;span style="color:#e6db74">}&lt;/span>/bin:$PATH&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> GUACAMOLE_HOME&lt;span style="color:#f92672">=&lt;/span>/config/guacamole&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /config&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> root /&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 8080&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [ &lt;span style="color:#e6db74">&amp;#34;/init&amp;#34;&lt;/span> ]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;li id="fn:3" role="doc-endnote">
+&lt;blockquote>
 &lt;p>&lt;strong>Deprecated&lt;/strong>&lt;br>
 Use nginx reverse proxy instead because ARR&amp;rsquo;s lack of Websocket support.&lt;/p>
 &lt;/blockquote>
@@ -416,15 +501,15 @@ The first line of the table prevent address &lt;code>/S4f_/&lt;/code> (another w
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
-&lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
-&lt;li id="fn:3" role="doc-endnote">
+&lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;li id="fn:4" role="doc-endnote">
 &lt;blockquote>
 &lt;p>&lt;strong>Deprecated&lt;/strong>&lt;br>
 The hostname that Hyper-v provided is not stable. It&amp;rsquo;s better set static ip both manually.&lt;/p>
 &lt;/blockquote>
-&lt;p>The old host-accessed-by-hostname (&lt;code>HOSTNAME.mshome.net&lt;/code>) plan isn&amp;rsquo;t unstable enough than assigning static ip to both host &lt;code>192.168.208.145&lt;/code> and VM &lt;code>192.168.208.146&lt;/code>. &lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;p>The old host-accessed-by-hostname (&lt;code>HOSTNAME.mshome.net&lt;/code>) plan isn&amp;rsquo;t unstable enough than assigning static ip to both host &lt;code>192.168.208.145&lt;/code> and VM &lt;code>192.168.208.146&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
-&lt;li id="fn:4" role="doc-endnote">
+&lt;li id="fn:5" role="doc-endnote">
 &lt;blockquote>
 &lt;p>&lt;strong>Important&lt;/strong>&lt;br>
 There is a &lt;strong>bug&lt;/strong> when Nginx handle reverse proxy to a webdav server. Related &lt;a href="https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx">discussion&lt;/a> and &lt;a href="https://github.com/keeweb/keeweb/issues/1326">webdav path requirement&lt;/a>.&lt;/p>
@@ -433,9 +518,9 @@ There is a &lt;strong>bug&lt;/strong> when Nginx handle reverse proxy to a webda
 For example, &lt;code>rclone&lt;/code> sends webdav method &lt;code>MOVE&lt;/code> and query uri &lt;code>https://&amp;lt;nginx&amp;gt;/S4f_/path/to/file&lt;/code> to the server to rename a file while the correct query uri without proxy is &lt;code>http://&amp;lt;IIS&amp;gt;/S4f_/path/to/file&lt;/code>. ~~Therefore, to fix the problem, I add extra if-statement and regex &lt;code>set&lt;/code> to convert path that contains scheme and server name to relative path.~~&lt;br>
 **Edit1:** It seems that it&amp;rsquo;s a common problem when use Nginx as reverse proxy and not just the bug of rclone. More information about this is in description above. The Webdav server will check the &lt;code>Destination&lt;/code> header in query uri if it match the internal server.&lt;br>
 **Edit2:** Because of &lt;a href="https://tools.ietf.org/html/rfc2518#section-9.3">RFC2518&lt;/a>, &lt;code>Destination&lt;/code> header should be absolute URI. Convert it to relative is not the solution. The better way is to rewrite the scheme and path to match the internal communication when proxy to IIS backend.&lt;br>
-**Edit3:** &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted string &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (**should be placed in &lt;code>http&lt;/code> section**) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxyed &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+**Edit3:** &lt;code>if-state&lt;/code> in Nginx will double escape() the query string (like convert already converted string &lt;code>%6E&lt;/code> to &lt;code>%256E&lt;/code>). So I use &lt;code>map&lt;/code> (**should be placed in &lt;code>http&lt;/code> section**) instead. For some reason, &lt;code>IIS Webdav&lt;/code> server behind proxy will check if &lt;code>MOVE&lt;/code> method&amp;rsquo;s query string &lt;code>Destination&lt;/code> is match the proxyed &lt;code>Host&lt;/code>. To avoid error, delete or comment the &lt;code>proxy_set_header host $http_host&lt;/code> in &lt;code>location /S4f_/ {..}&lt;/code>. &lt;a href="#fnref:5" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
-&lt;li id="fn:5" role="doc-endnote">
+&lt;li id="fn:6" role="doc-endnote">
 &lt;blockquote>
 &lt;p>&lt;strong>Optional&lt;/strong>&lt;br>
 Set basic auth for Nginx.&lt;/p>
@@ -444,7 +529,7 @@ Set basic auth for Nginx.&lt;/p>
 Add those lines in your &lt;code>nginx.conf&lt;/code> &lt;code>server&lt;/code> section.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx"> &lt;span style="color:#66d9ef">auth_basic&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Auth&amp;#34;&lt;/span>;
 &lt;span style="color:#66d9ef">auth_basic_user_file&lt;/span> &lt;span style="color:#e6db74">userpass.txt&lt;/span>;
-&lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:5" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
+&lt;/code>&lt;/pre>&lt;/div> &lt;a href="#fnref:6" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/li>
 &lt;/ol>
 &lt;/section>
 - //wmillers.github.io/posts/docker-guacamole-rdp/ - wmillers</description></item><item><title>如何实现 Github 免密码 git push 内容</title><link>//wmillers.github.io/document/github-ssh-git-push/</link><pubDate>Wed, 01 Jul 2020 05:38:20 +0800</pubDate><guid>//wmillers.github.io/document/github-ssh-git-push/</guid><description>源 //wmillers.github.io/document/github-ssh-git-push/ -&lt;blockquote>
