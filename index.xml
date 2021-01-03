@@ -1,4 +1,91 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Sat, 18 Jul 2020 00:05:26 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>自签 CA 和服务器证书命令合集</title><link>//wmillers.github.io/posts/self-signed-ca-server-cert/</link><pubDate>Sat, 18 Jul 2020 00:05:26 +0800</pubDate><guid>//wmillers.github.io/posts/self-signed-ca-server-cert/</guid><description>源 //wmillers.github.io/posts/self-signed-ca-server-cert/ -&lt;p>旧的自签CA以及服务器证书生成的命令合集，总的流程是:&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>源</title><link>//wmillers.github.io/</link><description>Recent content on 源</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>wmillers</copyright><lastBuildDate>Sun, 03 Jan 2021 08:03:23 +0800</lastBuildDate><atom:link href="//wmillers.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>切换博客主题 &amp; 阶段性整理原有主题修改</title><link>//wmillers.github.io/posts/blog-change-theme-record/</link><pubDate>Sun, 03 Jan 2021 08:03:23 +0800</pubDate><guid>//wmillers.github.io/posts/blog-change-theme-record/</guid><description>源 //wmillers.github.io/posts/blog-change-theme-record/ -&lt;blockquote>
+&lt;p>This file is created to record problems and changes I have met in the next commit. The theme of my blog will be changed from &lt;a href="themes.gohugo.io/hugo-theme-diary/">&lt;code>Diary&lt;/code>&lt;/a> to &lt;a href="themes.gohugo.io/hugo-theme-learn/">&lt;code>Learn&lt;/code>&lt;/a> &lt;strong>after this commit&lt;/strong>.&lt;/p>
+&lt;/blockquote>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Process Name&lt;/th>
+&lt;th>Record Time&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Switch theme start&lt;/td>
+&lt;td>2021.01.03&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Review old changes&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>More customize&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="changes-comparasion-in-these-two-themes">Changes comparasion in these two themes&lt;/h1>
+&lt;h2 id="old-changes-i-made-in-diary-theme">Old changes I made in &lt;code>Diary&lt;/code> theme:&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>File Name&lt;/th>
+&lt;th>Place (&lt;code>.&lt;/code> is &lt;code>themes/diary/&lt;/code>)&lt;/th>
+&lt;th>Usage&lt;/th>
+&lt;th>Add in the new theme?&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>PreventSteal.js&lt;/td>
+&lt;td>In ./layouts/partial/head.html as &amp;lt;script&amp;gt;&lt;/td>
+&lt;td>Jump back to my site &amp;lt;script src=&amp;rdquo;{{&amp;quot;/vendor/js/creadcss.min.js&amp;rdquo; | relURL}}&amp;rdquo; &amp;gt;&amp;lt;/script&amp;gt;&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>.git/&lt;/td>
+&lt;td>./&lt;/td>
+&lt;td>Delete to prevent submodule problem&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>config.toml&lt;/td>
+&lt;td>&amp;lt;home&amp;gt;&lt;/td>
+&lt;td>add CC BY-NC-SA 4.0&lt;/td>
+&lt;td>not Affected&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>copyright.html&lt;/td>
+&lt;td>./layouts/partials/&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>Maybe&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>tagCloud.html&lt;/td>
+&lt;td>In /layouts/partials/extrabar.html&lt;/td>
+&lt;td>Need to rewrite&lt;/td>
+&lt;td>Yes&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>404.html&lt;/td>
+&lt;td>./layouts/&lt;/td>
+&lt;td>&amp;lt;a href=&amp;rdquo;/&amp;ldquo;&amp;gt;404&amp;lt;/a&amp;gt;&lt;/td>
+&lt;td>Maybe&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="new-changes-should-be-made-in-learn-theme">New Changes should be made in &lt;code>Learn&lt;/code> theme:&lt;/h2>
+&lt;h1 id="list-of-extra-changes-in-learn-theme">List of extra changes in &lt;code>Learn&lt;/code> theme&lt;/h1>
+&lt;ul>
+&lt;li>&lt;input disabled="" type="checkbox"> A copy of help pages in &lt;a href="themes.gohugo.io/theme/hugo-theme-learn/en/">&lt;code>Learn&lt;/code> Demo Site&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>Some changes are inspired by &lt;a href="www.321dz.com/2004.html">Darren&lt;/a>&amp;rsquo;s blog built by wordpress.&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>&lt;input disabled="" type="checkbox"> word cloud&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> &amp;hellip;&lt;/li>
+&lt;/ul>
+- //wmillers.github.io/posts/blog-change-theme-record/ - wmillers</description></item><item><title>自签 CA 和服务器证书命令合集</title><link>//wmillers.github.io/posts/self-signed-ca-server-cert/</link><pubDate>Sat, 18 Jul 2020 00:05:26 +0800</pubDate><guid>//wmillers.github.io/posts/self-signed-ca-server-cert/</guid><description>源 //wmillers.github.io/posts/self-signed-ca-server-cert/ -&lt;p>旧的自签CA以及服务器证书生成的命令合集，总的流程是:&lt;/p>
 &lt;h2 id="cakeycacrt">CA.key+CA.crt&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> &lt;span style="color:#75715e">#服务器端私钥和CA证书生成&lt;/span>
 openssl req -x509 -newkey rsa:4096 -new -nodes -sha256 -days &lt;span style="color:#ae81ff">36500&lt;/span> &lt;span style="color:#ae81ff">\
@@ -987,4 +1074,4 @@ cond(yes)-&amp;gt;e
 cond(no)-&amp;gt;op
 This document is originated from markdownguide, converted from html to markdown by aspose, and fix format by myself. Get Started Cheat Sheet Basic Syntax Extended Syntax Tools Book Markdown Cheat
 2020-07-01
-&lt;/code>&lt;/pre>- //wmillers.github.io/posts/my-first-post/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t/</guid><description>源 //wmillers.github.io/test/t/ -- //wmillers.github.io/test/t/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t4564/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t4564/</guid><description>源 //wmillers.github.io/test/t4564/ -- //wmillers.github.io/test/t4564/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t629/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t629/</guid><description>源 //wmillers.github.io/test/t629/ -- //wmillers.github.io/test/t629/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t7183/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t7183/</guid><description>源 //wmillers.github.io/test/t7183/ -- //wmillers.github.io/test/t7183/ - wmillers</description></item></channel></rss>
+&lt;/code>&lt;/pre>- //wmillers.github.io/posts/my-first-post/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t/</guid><description>源 //wmillers.github.io/test/t/ -- //wmillers.github.io/test/t/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t4564/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t4564/</guid><description>源 //wmillers.github.io/test/t4564/ -- //wmillers.github.io/test/t4564/ - wmillers</description></item><item><title>T1</title><link>//wmillers.github.io/test/t629/</link><pubDate>Wed, 01 Jan 2020 01:01:01 +0800</pubDate><guid>//wmillers.github.io/test/t629/</guid><description>源 //wmillers.github.io/test/t629/ -- //wmillers.github.io/test/t629/ - wmillers</description></item></channel></rss>
