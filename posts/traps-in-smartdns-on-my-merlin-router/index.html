@@ -9,10 +9,10 @@
 <small>/
 <a href=/categories/tutorial/>tutorial</a></small>
 <small>/
-<a href=/tags/dns/>dns</a>,
-<a href=/tags/router/>router</a>,
-<a href=/tags/dnsmasq/>dnsmasq</a>,
-<a href=/tags/merlin/>merlin</a>,
+<a href=/tags/dns/>DNS</a>,
+<a href=/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>,
+<a href=/tags/dnsmasq/>Dnsmasq</a>,
+<a href=/tags/%E6%A2%85%E6%9E%97/>梅林</a>,
 <a href=/tags/linux/>linux</a></small></div><p><blockquote><p><em><strong>写在最前面：这个方案出于某些原因暂时弃用，虽然原有的会卡，但是smartdns更卡。此文仅作流程参考。</strong></em></p></blockquote><blockquote><p>这次将路由器上的dns由<code>dnsmasq</code>替换为<code>smartdns</code>主要是为了使用 dot (dns over TLS)，除此之外，<code>smartdns</code>还提供了多路查询dns的功能。本文主要记录了我在部署到梅林路由器上是遇到的坑。<br>开发者教程和文件链接：https://github.com/pymumu/smartdns</p></blockquote><h2 id=进入路由器的ssh环境>进入路由器的ssh环境
 <a class=anchor href=#%e8%bf%9b%e5%85%a5%e8%b7%af%e7%94%b1%e5%99%a8%e7%9a%84ssh%e7%8e%af%e5%a2%83>#</a></h2><p>在路由器设置里打开ssh开关，或者和我一样从软件中心里安装<code>shellinabox</code>，使用网页端的ssh。进入<code>shellinabox</code>后输入路由器帐号和密码。</p><h2 id=安装entware-opkg>安装entware (opkg)
 <a class=anchor href=#%e5%ae%89%e8%a3%85entware-opkg>#</a></h2><ol><li>系统管理 > 系统设置<br>| Enable SSH | 是 |<br>| Enable JFFS custom scripts and configs | 是 |</li><li>在ssh环境中：</li></ol><div class=highlight><div style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
