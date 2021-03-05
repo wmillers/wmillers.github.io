@@ -1,9 +1,9 @@
-<!doctype html><html lang=zh><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口。"><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="提升安全性：Nginx 反向代理 RDP 和 IIS 服务"><meta property="og:description" content="Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口。"><meta property="og:type" content="article"><meta property="og:url" content="https://const.icu/posts/docker-guacamole-rdp/"><meta property="article:published_time" content="2020-07-13T18:49:37+08:00"><meta property="article:modified_time" content="2021-02-19T22:56:49+08:00"><title>提升安全性：Nginx 反向代理 RDP 和 IIS 服务 | 源</title><link rel=manifest href=/manifest.json><link rel=icon href=/favicon.png type=image/x-icon><link rel=stylesheet href=/book.min.f4c5319613eaa39d11913ba54e1f6b1d199ff8d7a7eacace22fec5b2dd413ca2.css integrity="sha256-9MUxlhPqo50RkTulTh9rHRmf+Nen6srOIv7Fst1BPKI="><script defer src=/zh.search.min.0715b0e665e6f1fdca78288f38187c215de4972a3e4ed95654c03412f4833420.js integrity="sha256-BxWw5mXm8f3KeCiPOBh8IV3klyo+TtlWVMA0EvSDNCA="></script><script defer src=/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js integrity="sha256-dKi7B/C+6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script><script src=/creadcss.min.js></script></head><body><input type=checkbox class="hidden toggle" id=menu-control>
-<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav style=color:#555><h2 class=book-brand><a href=/><b style=font-family:simsun,serif;font-size:3.25rem;color:var(--body-font-color)>源</b></a><div style="font-size:1.25rem;padding:1rem 0">月背荧惑</div></h2><div class=book-search><input type=text id=book-search-input placeholder=搜索 aria-label=搜索 maxlength=64 data-hotkeys><div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul><li><a href=/>奇点 🗘</a></li><li><a href=/archives/>时间胶囊 ⏱</a></li><li><a href=/posts/documents/>背景辐射 🗯</a></li></ul><small style=position:absolute;margin-top:2rem><p>共 11 篇文章 ⋅ 10572 字</p><p><a rel=license href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh target=_blank><img alt=知识共享许可协议 src=/by-nc-sa.svg></a></p><p>Copyright © 2020 - 2021 <a href=https://const.icu target=_blank>S</a></p><p>魔改驱动自 Book 主题</p></small></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#no-need-to-prepare-config-file>No Need To Prepare Config File</a></li><li><a href=#open-firewall-for-iis-unusual-port>Open Firewall for IIS' Unusual Port</a></li><li><a href=#install-guacamole-by-docker>Install Guacamole by Docker</a></li><li><a href=#nginx-url-rewrite>Nginx URL Rewrite</a><ul><li><a href=#assign-ips-to-vm-4>Assign IPs to VM</a></li><li><a href=#install-nginx-with-webdav-module>Install Nginx with Webdav module</a></li><li><a href=#add-proxy-config>Add Proxy Config</a></li><li><a href=#config-https-and-auth>Config HTTPS and Auth</a></li><li><a href=#manage-nginx-and-guacamole-to-autostart>Manage Nginx and Guacamole to Autostart</a></li></ul></li><li><a href=#edit-guacamole-settings>Edit Guacamole Settings</a><ul><li><a href=#add-account>Add Account</a></li><li><a href=#add-connections>Add Connections</a></li><li><a href=#test-on-connection>Test on Connection</a></li></ul></li><li><a href=#more-security-stuff>More Security Stuff</a><ul><li><a href=#expose-3389-to-hyper-v-only>Expose 3389 to Hyper-v only</a></li><li><a href=#fail-x00x03-to-ban>Fail x00/x03 to Ban</a></li></ul></li><li><a href=#appendix>APPENDIX</a></li></ul></nav></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/svg/menu.svg class=book-icon alt=Menu></label>
+<!doctype html><html lang=zh><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口。"><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="提升安全性：Nginx 反向代理 RDP 和 IIS 服务"><meta property="og:description" content="Windows 远程桌面服务作为开放给外网的高权限系统组件存在很大的安全隐患，因此如果需要使用 RDP 服务，最好不要直接开放其对应的 3389 端口。"><meta property="og:type" content="article"><meta property="og:url" content="https://const.icu/posts/docker-guacamole-rdp/"><meta property="article:published_time" content="2020-07-13T18:49:37+08:00"><meta property="article:modified_time" content="2021-02-28T23:50:46+08:00"><title>提升安全性：Nginx 反向代理 RDP 和 IIS 服务 | 源</title><link rel=manifest href=/manifest.json><link rel=icon href=/favicon.png type=image/x-icon><link rel=stylesheet href=/book.min.f4c5319613eaa39d11913ba54e1f6b1d199ff8d7a7eacace22fec5b2dd413ca2.css integrity="sha256-9MUxlhPqo50RkTulTh9rHRmf+Nen6srOIv7Fst1BPKI="><script defer src=/zh.search.min.ad41bb66febfd6915a82a96f8091f3dcb0aa5fb74f6300a82e75f4dd8fafe15a.js integrity="sha256-rUG7Zv6/1pFagqlvgJHz3LCqX7dPYwCoLnX03Y+v4Vo="></script><script defer src=/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js integrity="sha256-dKi7B/C+6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script><script src=/creadcss.min.js></script></head><body><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav style=color:#555><h2 class=book-brand><a href=/><b style=font-family:simsun,serif;font-size:3.25rem;color:var(--body-font-color)>源</b></a><div style="font-size:1.25rem;padding:1rem 0">月背荧惑</div></h2><div class=book-search><input type=text id=book-search-input placeholder=搜索 aria-label=搜索 maxlength=64 data-hotkeys><div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul><li><a href=/>奇点 🗘</a></li><li><a href=/archives/>时间胶囊 ⏱</a></li><li><a href=/posts/documents/>背景辐射 🗯</a></li></ul><small style=position:absolute;margin-top:2rem><p>共 11 篇文章 ⋅ 10470 字</p><p><a rel=license href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh target=_blank><img alt=知识共享许可协议 src=/by-nc-sa.svg></a></p><p>Copyright © 2020 - 2021 <a href=https://const.icu target=_blank>S</a></p><p>魔改驱动自 Book 主题</p></small></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#no-need-to-prepare-config-file>No Need To Prepare Config File</a></li><li><a href=#open-firewall-for-iis-unusual-port>Open Firewall for IIS' Unusual Port</a></li><li><a href=#install-guacamole-by-docker>Install Guacamole by Docker</a></li><li><a href=#nginx-url-rewrite>Nginx URL Rewrite</a><ul><li><a href=#assign-ips-to-vm-4>Assign IPs to VM</a></li><li><a href=#install-nginx-with-webdav-module>Install Nginx with Webdav module</a></li><li><a href=#add-proxy-config>Add Proxy Config</a></li><li><a href=#config-https-and-auth>Config HTTPS and Auth</a></li><li><a href=#manage-nginx-and-guacamole-to-autostart>Manage Nginx and Guacamole to Autostart</a></li></ul></li><li><a href=#edit-guacamole-settings>Edit Guacamole Settings</a><ul><li><a href=#add-account>Add Account</a></li><li><a href=#add-connections>Add Connections</a></li><li><a href=#test-on-connection>Test on Connection</a></li></ul></li><li><a href=#more-security-stuff>More Security Stuff</a><ul><li><a href=#expose-3389-to-hyper-v-only>Expose 3389 to Hyper-v only</a></li><li><a href=#fail-x00x03-to-ban>Fail x00/x03 to Ban</a></li></ul></li><li><a href=#appendix>APPENDIX</a></li></ul></nav></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/svg/menu.svg class=book-icon alt=Menu></label>
 <strong>提升安全性：Nginx 反向代理 RDP 和 IIS 服务</strong>
-<label for=toc-control><img src=/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#no-need-to-prepare-config-file>No Need To Prepare Config File</a></li><li><a href=#open-firewall-for-iis-unusual-port>Open Firewall for IIS' Unusual Port</a></li><li><a href=#install-guacamole-by-docker>Install Guacamole by Docker</a></li><li><a href=#nginx-url-rewrite>Nginx URL Rewrite</a><ul><li><a href=#assign-ips-to-vm-4>Assign IPs to VM</a></li><li><a href=#install-nginx-with-webdav-module>Install Nginx with Webdav module</a></li><li><a href=#add-proxy-config>Add Proxy Config</a></li><li><a href=#config-https-and-auth>Config HTTPS and Auth</a></li><li><a href=#manage-nginx-and-guacamole-to-autostart>Manage Nginx and Guacamole to Autostart</a></li></ul></li><li><a href=#edit-guacamole-settings>Edit Guacamole Settings</a><ul><li><a href=#add-account>Add Account</a></li><li><a href=#add-connections>Add Connections</a></li><li><a href=#test-on-connection>Test on Connection</a></li></ul></li><li><a href=#more-security-stuff>More Security Stuff</a><ul><li><a href=#expose-3389-to-hyper-v-only>Expose 3389 to Hyper-v only</a></li><li><a href=#fail-x00x03-to-ban>Fail x00/x03 to Ban</a></li></ul></li><li><a href=#appendix>APPENDIX</a></li></ul></nav></aside></header><article class="markdown with-index"><h1><b><a href=/posts/docker-guacamole-rdp/>提升安全性：Nginx 反向代理 RDP 和 IIS 服务</a></b></h1><div style=color:#999><small>最后修改于 2021-2-19
+<label for=toc-control><img src=/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#no-need-to-prepare-config-file>No Need To Prepare Config File</a></li><li><a href=#open-firewall-for-iis-unusual-port>Open Firewall for IIS' Unusual Port</a></li><li><a href=#install-guacamole-by-docker>Install Guacamole by Docker</a></li><li><a href=#nginx-url-rewrite>Nginx URL Rewrite</a><ul><li><a href=#assign-ips-to-vm-4>Assign IPs to VM</a></li><li><a href=#install-nginx-with-webdav-module>Install Nginx with Webdav module</a></li><li><a href=#add-proxy-config>Add Proxy Config</a></li><li><a href=#config-https-and-auth>Config HTTPS and Auth</a></li><li><a href=#manage-nginx-and-guacamole-to-autostart>Manage Nginx and Guacamole to Autostart</a></li></ul></li><li><a href=#edit-guacamole-settings>Edit Guacamole Settings</a><ul><li><a href=#add-account>Add Account</a></li><li><a href=#add-connections>Add Connections</a></li><li><a href=#test-on-connection>Test on Connection</a></li></ul></li><li><a href=#more-security-stuff>More Security Stuff</a><ul><li><a href=#expose-3389-to-hyper-v-only>Expose 3389 to Hyper-v only</a></li><li><a href=#fail-x00x03-to-ban>Fail x00/x03 to Ban</a></li></ul></li><li><a href=#appendix>APPENDIX</a></li></ul></nav></aside></header><article class="markdown with-index"><h1><b><a href=/posts/docker-guacamole-rdp/>提升安全性：Nginx 反向代理 RDP 和 IIS 服务</a></b></h1><div style=color:#999><small>最后修改于 2021-2-28
 <span itemprop=wordCount>⋅ 打字机
-2.9k
+2.8k
 ⋅</span>
 <span itemprop=timeRequired>穿越6分钟</span></small>
 <small>/
@@ -325,221 +325,113 @@ sudo nano /etc/fail2ban/jail.local
 </code></pre></td></tr></table></div></div><p>To rescue from jail</p><div class=highlight><div style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo fail2ban-client <span style=color:#204a87>set</span> nginx-x0x unbanip &lt;ip&gt;
 </code></pre></td></tr></table></div></div><h2 id=appendix>APPENDIX
-<a class=anchor href=#appendix>#</a></h2><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>Changing the config of Guacamole is now in its GUI control panel instead of in its config file.</p></blockquote><p>First, prepare the config file that will be used by <code>guacamole</code>.<br>Replace <code>192.168.208.145</code> with your <code>Windows</code> IP address or <code>Hostname</code> (<strong>not recommend</strong>) connected to the <code>Hyper-v</code> (as <code>192.168.208.146</code> is the VM&rsquo;s IP that <code>Hyper-v</code> assigned to). Also don&rsquo;t forget to change the <code>username</code> and <code>password (md5)</code>.<br>In <code>Debian</code>, you can use <code>md5sum &lt;File contains PASSWORD></code> to hash your plain password.<br><strong>/root/guacamole/user-mapping.xml</strong></p><div class=highlight><div style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;user-mapping&gt;</span>
-    <span style=color:#8f5902;font-style:italic>&lt;!-- Per-user authentication and config information 
-</span><span style=color:#8f5902;font-style:italic>    &lt;authorize username=&#34;USERNAME&#34; password=&#34;PASSWORD&#34;&gt;
-</span><span style=color:#8f5902;font-style:italic>        &lt;protocol&gt;vnc&lt;/protocol&gt;
-</span><span style=color:#8f5902;font-style:italic>        &lt;param name=&#34;hostname&#34;&gt;localhost&lt;/param&gt;
-</span><span style=color:#8f5902;font-style:italic>        &lt;param name=&#34;port&#34;&gt;5900&lt;/param&gt;
-</span><span style=color:#8f5902;font-style:italic>        &lt;param name=&#34;password&#34;&gt;VNCPASS&lt;/param&gt;
-</span><span style=color:#8f5902;font-style:italic>    &lt;/authorize&gt;
-</span><span style=color:#8f5902;font-style:italic>    --&gt;</span>
+<a class=anchor href=#appendix>#</a></h2><p>First, prepare the config file that will be used by <code>guacamole</code>.<br>Replace <code>192.168.208.145</code> with your <code>Windows</code> IP address or <code>Hostname</code> (<strong>not recommend</strong>) connected to the <code>Hyper-v</code> (as <code>192.168.208.146</code> is the VM&rsquo;s IP that <code>Hyper-v</code> assigned to). Also don&rsquo;t forget to change the <code>username</code> and <code>password (md5)</code>.<br>In <code>Debian</code>, you can use <code>md5sum &lt;File contains PASSWORD></code> to hash your plain password.<br><strong>/root/guacamole/user-mapping.xml</strong>
+```xml
+<user-mapping></p><pre><code>    &lt;!-- Another user, but using md5 to hash the password
+        (example below uses the md5 hash of &quot;PASSWORD&quot;) --&gt;
+    &lt;authorize 
+            username=&quot;admin&quot;
+            password=&quot;**PASSWORD CONVERT TO MD5**&quot;
+            encoding=&quot;md5&quot;&gt;
+    &lt;connection name=&quot;Unique Name&quot;&gt;
+        &lt;protocol&gt;rdp&lt;/protocol&gt;
+        &lt;param name=&quot;hostname&quot;&gt;192.168.208.145&lt;/param&gt;
+        &lt;param name=&quot;port&quot;&gt;3389&lt;/param&gt;
+    &lt;/connection&gt;
+    &lt;/authorize&gt;
 
-    <span style=color:#8f5902;font-style:italic>&lt;!-- Another user, but using md5 to hash the password
-</span><span style=color:#8f5902;font-style:italic>        (example below uses the md5 hash of &#34;PASSWORD&#34;) --&gt;</span>
-    <span style=color:#204a87;font-weight:700>&lt;authorize</span> 
-            <span style=color:#c4a000>username=</span><span style=color:#4e9a06>&#34;admin&#34;</span>
-            <span style=color:#c4a000>password=</span><span style=color:#4e9a06>&#34;**PASSWORD CONVERT TO MD5**&#34;</span>
-            <span style=color:#c4a000>encoding=</span><span style=color:#4e9a06>&#34;md5&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>
-    <span style=color:#204a87;font-weight:700>&lt;connection</span> <span style=color:#c4a000>name=</span><span style=color:#4e9a06>&#34;Unique Name&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>
-        <span style=color:#204a87;font-weight:700>&lt;protocol&gt;</span>rdp<span style=color:#204a87;font-weight:700>&lt;/protocol&gt;</span>
-        <span style=color:#204a87;font-weight:700>&lt;param</span> <span style=color:#c4a000>name=</span><span style=color:#4e9a06>&#34;hostname&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>192.168.208.145<span style=color:#204a87;font-weight:700>&lt;/param&gt;</span>
-        <span style=color:#204a87;font-weight:700>&lt;param</span> <span style=color:#c4a000>name=</span><span style=color:#4e9a06>&#34;port&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>3389<span style=color:#204a87;font-weight:700>&lt;/param&gt;</span>
-    <span style=color:#204a87;font-weight:700>&lt;/connection&gt;</span>
-    <span style=color:#204a87;font-weight:700>&lt;/authorize&gt;</span>
+&lt;/user-mapping&gt;
+```
+</code></pre><p>(This file is originated from <a href=//github.com/oznu/docker-guacamole/><code>oznu/guacamole</code></a>, however the path in <code>curl -SLo ${CATALINA_HOME}/webapps/ROOT.war</code> has been changed to <code>${CATALINA_HOME}/webapps/rdp.war</code> which is same to <code>https://.../rdp</code>).
+```dockerfile
+FROM library/tomcat:9-jre11</p><pre><code>ENV ARCH=amd64 \
+GUAC_VER=1.2.0 \
+GUACAMOLE_HOME=/app/guacamole \
+PG_MAJOR=9.6 \
+PGDATA=/config/postgres \
+POSTGRES_USER=guacamole \
+POSTGRES_DB=guacamole_db
 
-<span style=color:#204a87;font-weight:700>&lt;/user-mapping&gt;</span>
-</code></pre></td></tr></table></div></div><a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:2 role=doc-endnote><blockquote><p><strong>Failed</strong><br>Failed on <code>COPY root /</code>.</p></blockquote><p>(This file is originated from <a href=//github.com/oznu/docker-guacamole/><code>oznu/guacamole</code></a>, however the path in <code>curl -SLo ${CATALINA_HOME}/webapps/ROOT.war</code> has been changed to <code>${CATALINA_HOME}/webapps/rdp.war</code> which is same to <code>https://.../rdp</code>).</p><div class=highlight><div style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-dockerfile data-lang=dockerfile><span style=color:#204a87;font-weight:700>FROM</span><span style=color:#4e9a06> library/tomcat:9-jre11</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>ENV</span> <span style=color:#000>ARCH</span><span style=color:#ce5c00;font-weight:700>=</span>amd64 <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>GUAC_VER</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>1</span>.2.0 <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#ce5c00;font-weight:700>=</span>/app/guacamole <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>PG_MAJOR</span><span style=color:#ce5c00;font-weight:700>=</span>9.6 <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>PGDATA</span><span style=color:#ce5c00;font-weight:700>=</span>/config/postgres <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>POSTGRES_USER</span><span style=color:#ce5c00;font-weight:700>=</span>guacamole <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000>POSTGRES_DB</span><span style=color:#ce5c00;font-weight:700>=</span>guacamole_db<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Apply the s6-overlay</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> curl -SLO <span style=color:#4e9a06>&#34;https://github.com/just-containers/s6-overlay/releases/download/v1.20.0.0/s6-overlay-</span><span style=color:#4e9a06>${</span><span style=color:#000>ARCH</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.tar.gz&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> tar -xzf s6-overlay-<span style=color:#4e9a06>${</span><span style=color:#000>ARCH</span><span style=color:#4e9a06>}</span>.tar.gz -C / <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> tar -xzf s6-overlay-<span style=color:#4e9a06>${</span><span style=color:#000>ARCH</span><span style=color:#4e9a06>}</span>.tar.gz -C /usr ./bin <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf s6-overlay-<span style=color:#4e9a06>${</span><span style=color:#000>ARCH</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> mkdir -p <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/lib <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/extensions<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>WORKDIR</span><span style=color:#4e9a06> ${GUACAMOLE_HOME}</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Install dependencies</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> apt-get update <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> apt-get install -y <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    libcairo2-dev libjpeg62-turbo-dev libpng-dev <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    libossp-uuid-dev libavcodec-dev libavutil-dev <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    libswscale-dev freerdp2-dev libfreerdp-client2-2 libpango1.0-dev <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    libssh2-1-dev libtelnet-dev libvncserver-dev <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    libpulse-dev libssl-dev libvorbis-dev libwebp-dev libwebsockets-dev <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    ghostscript postgresql-<span style=color:#4e9a06>${</span><span style=color:#000>PG_MAJOR</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf /var/lib/apt/lists/*<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Link FreeRDP to where guac expects it to be</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> <span style=color:#ce5c00;font-weight:700>[</span> <span style=color:#4e9a06>&#34;</span><span style=color:#000>$ARCH</span><span style=color:#4e9a06>&#34;</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;armhf&#34;</span> <span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> ln -s /usr/local/lib/freerdp /usr/lib/arm-linux-gnueabihf/freerdp <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#204a87>exit</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> <span style=color:#ce5c00;font-weight:700>[</span> <span style=color:#4e9a06>&#34;</span><span style=color:#000>$ARCH</span><span style=color:#4e9a06>&#34;</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;amd64&#34;</span> <span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> ln -s /usr/local/lib/freerdp /usr/lib/x86_64-linux-gnu/freerdp <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#204a87>exit</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Install guacamole-server</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> curl -SLO <span style=color:#4e9a06>&#34;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>/source/guacamole-server-</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.tar.gz&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> tar -xzf guacamole-server-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> <span style=color:#204a87>cd</span> guacamole-server-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> ./configure <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> make -j<span style=color:#204a87;font-weight:700>$(</span>getconf _NPROCESSORS_ONLN<span style=color:#204a87;font-weight:700>)</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> make install <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> <span style=color:#204a87>cd</span> .. <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf guacamole-server-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz guacamole-server-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> ldconfig<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Install guacamole-client and postgres auth adapter</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> <span style=color:#204a87>set</span> -x <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf <span style=color:#4e9a06>${</span><span style=color:#000>CATALINA_HOME</span><span style=color:#4e9a06>}</span>/webapps/ROOT <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> curl -SLo <span style=color:#4e9a06>${</span><span style=color:#000>CATALINA_HOME</span><span style=color:#4e9a06>}</span>/webapps/rdp.war <span style=color:#4e9a06>&#34;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>/binary/guacamole-</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.war&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> curl -SLo <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/lib/postgresql-42.1.4.jar <span style=color:#4e9a06>&#34;https://jdbc.postgresql.org/download/postgresql-42.1.4.jar&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> curl -SLO <span style=color:#4e9a06>&#34;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>/binary/guacamole-auth-jdbc-</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.tar.gz&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> tar -xzf guacamole-auth-jdbc-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> cp -R guacamole-auth-jdbc-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>/postgresql/guacamole-auth-jdbc-postgresql-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.jar <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/extensions/ <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> cp -R guacamole-auth-jdbc-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>/postgresql/schema <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/ <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf guacamole-auth-jdbc-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span> guacamole-auth-jdbc-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#8f5902;font-style:italic># Add optional extensions</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>RUN</span> <span style=color:#204a87>set</span> -xe <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> mkdir <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/extensions-available <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> <span style=color:#204a87;font-weight:700>for</span> i in auth-ldap auth-duo auth-header auth-cas auth-openid auth-quickconnect auth-totp<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>/binary/guacamole-</span><span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>-</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.tar.gz&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> curl -SLO <span style=color:#4e9a06>&#34;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>/binary/guacamole-</span><span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>-</span><span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>.tar.gz&#34;</span> <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> tar -xzf guacamole-<span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> cp guacamole-<span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>/guacamole-<span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.jar <span style=color:#4e9a06>${</span><span style=color:#000>GUACAMOLE_HOME</span><span style=color:#4e9a06>}</span>/extensions-available/ <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span>    <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> rm -rf guacamole-<span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span> guacamole-<span style=color:#4e9a06>${</span><span style=color:#000>i</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>GUAC_VER</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#4e9a06>\
-</span><span style=color:#4e9a06></span><span style=color:#000;font-weight:700>;</span><span style=color:#204a87;font-weight:700>done</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>ENV</span> <span style=color:#000>PATH</span><span style=color:#ce5c00;font-weight:700>=</span>/usr/lib/postgresql/<span style=color:#4e9a06>${</span><span style=color:#000>PG_MAJOR</span><span style=color:#4e9a06>}</span>/bin:<span style=color:#000>$PATH</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>ENV</span> <span style=color:#000>GUACAMOLE_HOME</span><span style=color:#ce5c00;font-weight:700>=</span>/config/guacamole<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>WORKDIR</span><span style=color:#4e9a06> /config</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>COPY</span> root /<span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>EXPOSE</span><span style=color:#4e9a06> 8080</span><span style=color:#a40000>
-</span><span style=color:#a40000>
-</span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>ENTRYPOINT</span> <span style=color:#000;font-weight:700>[</span> <span style=color:#4e9a06>&#34;/init&#34;</span> <span style=color:#000;font-weight:700>]</span><span style=color:#a40000>
-</span></code></pre></td></tr></table></div></div><a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:3 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>Use nginx reverse proxy instead because ARR&rsquo;s lack of Websocket support.</p></blockquote><p><strong>Install Application Request Routing (ARR) Module</strong><br>Install <code>ARR 3.0</code> for <code>Reverse Proxy</code> support. You can install the ARR module directly from the location: <a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0</a>.</p><p><strong>Change URL Rewrite Settings</strong><br>Open the <code>IIS Manager</code> and open the <code>Default Web Site</code> config pannel. Then double click on the <code>URL Rewrite</code> option.<br>Add 2 rules for <code>Inbound rules</code> and another one for <code>Outbound Rules</code> by clicking on the <code>Add Rule(s)...</code> action and Choose the <code>Blank Rule</code> template. Contents that needed to be changed are in the following tables:</p><p><strong>Inbound Rules</strong><br>The first line of the table prevent address <code>/S4f_/</code> (another web app that hosted on the IIS server) to be rewritten to the <code>rdp</code> sevice. Also need to check the <strong>Append query string</strong> checkbox.</p><table><thead><tr><th>Name</th><th>Input</th><th>Match</th><th>Pattern</th><th>Action Type</th><th>Action URL</th><th>Stop Processing</th></tr></thead><tbody><tr><td>S4f</td><td>-</td><td>match</td><td>S4f_(/?)(.*)</td><td>Rewrite</td><td>{R:0}</td><td>True</td></tr><tr><td>rdp</td><td>-</td><td>match</td><td>rdp(/?)(.*)</td><td>Rewrite</td><td>http://172.17.111.38:8080/{R:0}</td><td>True</td></tr></tbody></table><a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:4 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>The hostname that Hyper-v provided is not stable. It&rsquo;s better set static ip both manually.</p></blockquote><p>The old host-accessed-by-hostname (<code>HOSTNAME.mshome.net</code>) plan isn&rsquo;t unstable enough than assigning static ip to both host <code>192.168.208.145</code> and VM <code>192.168.208.146</code>. <a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><blockquote><p><strong>Important</strong><br>There is a <strong>bug</strong> when Nginx handle reverse proxy to a webdav server. Related <a href=https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx>discussion</a> and <a href=https://github.com/keeweb/keeweb/issues/1326>webdav path requirement</a>.</p></blockquote><p>In Nginx&rsquo;s reverse proxy part <code>S4f_</code>, I add extra filter to change query uri for webdav service. I&rsquo;m using <code>rclone</code> as my Webdav client~~, however, it contains bugs while sending requests to a proxyed server~~.
-For example, <code>rclone</code> sends webdav method <code>MOVE</code> and query uri <code>https://&lt;nginx>/S4f_/path/to/file</code> to the server to rename a file while the correct query uri without proxy is <code>http://&lt;IIS>/S4f_/path/to/file</code>. ~~Therefore, to fix the problem, I add extra if-statement and regex <code>set</code> to convert path that contains scheme and server name to relative path.~~<br>**Edit1:** It seems that it&rsquo;s a common problem when use Nginx as reverse proxy and not just the bug of rclone. More information about this is in description above. The Webdav server will check the <code>Destination</code> header in query uri if it match the internal server.<br>**Edit2:** Because of <a href=https://tools.ietf.org/html/rfc2518#section-9.3>RFC2518</a>, <code>Destination</code> header should be absolute URI. Convert it to relative is not the solution. The better way is to rewrite the scheme and path to match the internal communication when proxy to IIS backend.<br>**Edit3:** <code>if-state</code> in Nginx will double escape() the query string (like convert already converted string <code>%6E</code> to <code>%256E</code>). So I use <code>map</code> (**should be placed in <code>http</code> section**) instead. For some reason, <code>IIS Webdav</code> server behind proxy will check if <code>MOVE</code> method&rsquo;s query string <code>Destination</code> is match the proxyed <code>Host</code>. To avoid error, delete or comment the <code>proxy_set_header host $http_host</code> in <code>location /S4f_/ {..}</code>. <a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:6 role=doc-endnote><blockquote><p><strong>Optional</strong><br>Set basic auth for Nginx.</p></blockquote><p>Generate your <code>conf/userpass.txt</code> file by command <code>htpasswd</code> or online <code>MD5 htpasswd</code> generator. Text inside are like <code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0</code>.
-Add those lines in your <code>nginx.conf</code> <code>server</code> section.</p><div class=highlight><div style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx>        <span style=color:#204a87;font-weight:700>auth_basic</span>           <span style=color:#4e9a06>&#34;Auth&#34;</span><span style=color:#000;font-weight:700>;</span>
-        <span style=color:#204a87;font-weight:700>auth_basic_user_file</span> <span style=color:#4e9a06>userpass.txt</span><span style=color:#000;font-weight:700>;</span> 
-</code></pre></td></tr></table></div></div><a href=#fnref:6 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li></ol></section></p></article><script src=/qrious.min.js></script><script>hasQr=false;function showQr(on){if(on&&!hasQr){(function(){var qr=new QRious({element:document.getElementById('qr'),value:window.location.href});})();hasQr=true;}
+# Apply the s6-overlay
+
+RUN curl -SLO &quot;https://github.com/just-containers/s6-overlay/releases/download/v1.20.0.0/s6-overlay-${ARCH}.tar.gz&quot; \
+&amp;&amp; tar -xzf s6-overlay-${ARCH}.tar.gz -C / \
+&amp;&amp; tar -xzf s6-overlay-${ARCH}.tar.gz -C /usr ./bin \
+&amp;&amp; rm -rf s6-overlay-${ARCH}.tar.gz \
+&amp;&amp; mkdir -p ${GUACAMOLE_HOME} \
+    ${GUACAMOLE_HOME}/lib \
+    ${GUACAMOLE_HOME}/extensions
+
+WORKDIR ${GUACAMOLE_HOME}
+
+# Install dependencies
+RUN apt-get update &amp;&amp; apt-get install -y \
+    libcairo2-dev libjpeg62-turbo-dev libpng-dev \
+    libossp-uuid-dev libavcodec-dev libavutil-dev \
+    libswscale-dev freerdp2-dev libfreerdp-client2-2 libpango1.0-dev \
+    libssh2-1-dev libtelnet-dev libvncserver-dev \
+    libpulse-dev libssl-dev libvorbis-dev libwebp-dev libwebsockets-dev \
+    ghostscript postgresql-${PG_MAJOR} \
+&amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# Link FreeRDP to where guac expects it to be
+RUN [ &quot;$ARCH&quot; = &quot;armhf&quot; ] &amp;&amp; ln -s /usr/local/lib/freerdp /usr/lib/arm-linux-gnueabihf/freerdp || exit 0
+RUN [ &quot;$ARCH&quot; = &quot;amd64&quot; ] &amp;&amp; ln -s /usr/local/lib/freerdp /usr/lib/x86_64-linux-gnu/freerdp || exit 0
+
+# Install guacamole-server
+RUN curl -SLO &quot;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/${GUAC_VER}/source/guacamole-server-${GUAC_VER}.tar.gz&quot; \
+&amp;&amp; tar -xzf guacamole-server-${GUAC_VER}.tar.gz \
+&amp;&amp; cd guacamole-server-${GUAC_VER} \
+&amp;&amp; ./configure \
+&amp;&amp; make -j$(getconf _NPROCESSORS_ONLN) \
+&amp;&amp; make install \
+&amp;&amp; cd .. \
+&amp;&amp; rm -rf guacamole-server-${GUAC_VER}.tar.gz guacamole-server-${GUAC_VER} \
+&amp;&amp; ldconfig
+
+# Install guacamole-client and postgres auth adapter
+RUN set -x \
+&amp;&amp; rm -rf ${CATALINA_HOME}/webapps/ROOT \
+&amp;&amp; curl -SLo ${CATALINA_HOME}/webapps/rdp.war &quot;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/${GUAC_VER}/binary/guacamole-${GUAC_VER}.war&quot; \
+&amp;&amp; curl -SLo ${GUACAMOLE_HOME}/lib/postgresql-42.1.4.jar &quot;https://jdbc.postgresql.org/download/postgresql-42.1.4.jar&quot; \
+&amp;&amp; curl -SLO &quot;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/${GUAC_VER}/binary/guacamole-auth-jdbc-${GUAC_VER}.tar.gz&quot; \
+&amp;&amp; tar -xzf guacamole-auth-jdbc-${GUAC_VER}.tar.gz \
+&amp;&amp; cp -R guacamole-auth-jdbc-${GUAC_VER}/postgresql/guacamole-auth-jdbc-postgresql-${GUAC_VER}.jar ${GUACAMOLE_HOME}/extensions/ \
+&amp;&amp; cp -R guacamole-auth-jdbc-${GUAC_VER}/postgresql/schema ${GUACAMOLE_HOME}/ \
+&amp;&amp; rm -rf guacamole-auth-jdbc-${GUAC_VER} guacamole-auth-jdbc-${GUAC_VER}.tar.gz
+
+# Add optional extensions
+RUN set -xe \
+&amp;&amp; mkdir ${GUACAMOLE_HOME}/extensions-available \
+&amp;&amp; for i in auth-ldap auth-duo auth-header auth-cas auth-openid auth-quickconnect auth-totp; do \
+    echo &quot;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/${GUAC_VER}/binary/guacamole-${i}-${GUAC_VER}.tar.gz&quot; \
+    &amp;&amp; curl -SLO &quot;http://apache.org/dyn/closer.cgi?action=download&amp;filename=guacamole/${GUAC_VER}/binary/guacamole-${i}-${GUAC_VER}.tar.gz&quot; \
+    &amp;&amp; tar -xzf guacamole-${i}-${GUAC_VER}.tar.gz \
+    &amp;&amp; cp guacamole-${i}-${GUAC_VER}/guacamole-${i}-${GUAC_VER}.jar ${GUACAMOLE_HOME}/extensions-available/ \
+    &amp;&amp; rm -rf guacamole-${i}-${GUAC_VER} guacamole-${i}-${GUAC_VER}.tar.gz \
+;done
+
+ENV PATH=/usr/lib/postgresql/${PG_MAJOR}/bin:$PATH
+ENV GUACAMOLE_HOME=/config/guacamole
+
+WORKDIR /config
+
+COPY root /
+
+EXPOSE 8080
+
+ENTRYPOINT [ &quot;/init&quot; ]
+```
+</code></pre><p><strong>Install Application Request Routing (ARR) Module</strong><br>Install <code>ARR 3.0</code> for <code>Reverse Proxy</code> support. You can install the ARR module directly from the location: <a href="http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0">http://www.microsoft.com/web/gallery/install.aspx?appid=ARRv3_0</a>.</p><p><strong>Change URL Rewrite Settings</strong><br>Open the <code>IIS Manager</code> and open the <code>Default Web Site</code> config pannel. Then double click on the <code>URL Rewrite</code> option.<br>Add 2 rules for <code>Inbound rules</code> and another one for <code>Outbound Rules</code> by clicking on the <code>Add Rule(s)...</code> action and Choose the <code>Blank Rule</code> template. Contents that needed to be changed are in the following tables:</p><p><strong>Inbound Rules</strong><br>The first line of the table prevent address <code>/S4f_/</code> (another web app that hosted on the IIS server) to be rewritten to the <code>rdp</code> sevice. Also need to check the <strong>Append query string</strong> checkbox.</p><pre><code>|Name|Input|Match|Pattern|Action Type|Action URL|Stop Processing|
+|-|-|-|-|-|-|-|
+|S4f| - |match|S4f_(/?)(.*)|Rewrite|{R:0}|True|
+|rdp| - |match|rdp(/?)(.*)|Rewrite|http://172.17.111.38:8080/{R:0}|True|
+</code></pre><p>The old host-accessed-by-hostname (<code>HOSTNAME.mshome.net</code>) plan isn&rsquo;t unstable enough than assigning static ip to both host <code>192.168.208.145</code> and VM <code>192.168.208.146</code>.</p><p>In Nginx&rsquo;s reverse proxy part <code>S4f_</code>, I add extra filter to change query uri for webdav service. I&rsquo;m using <code>rclone</code> as my Webdav client, <del>however, it contains bugs while sending requests to a proxyed server</del>.
+For example, <code>rclone</code> sends webdav method <code>MOVE</code> and query uri <code>https://&lt;nginx>/S4f_/path/to/file</code> to the server to rename a file while the correct query uri without proxy is <code>http://&lt;IIS>/S4f_/path/to/file</code>. <del>Therefore, to fix the problem, I add extra if-statement and regex <code>set</code> to convert path that contains scheme and server name to relative path</del>.<br><strong>Edit1</strong>: It seems that it&rsquo;s a common problem when use Nginx as reverse proxy and not just the bug of rclone. More information about this is in description above. The Webdav server will check the <code>Destination</code> header in query uri if it match the internal server.<br><strong>Edit2</strong>: Because of <a href=https://tools.ietf.org/html/rfc2518#section-9.3>RFC2518</a>, <code>Destination</code> header should be absolute URI. Convert it to relative is not the solution. The better way is to rewrite the scheme and path to match the internal communication when proxy to IIS backend.<br><strong>Edit3</strong>: <code>if-state</code> in Nginx will double escape() the query string (like convert already converted string <code>%6E</code> to <code>%256E</code>). So I use <code>map</code> (<strong>should be placed in <code>http</code> section</strong>) instead. For some reason, <code>IIS Webdav</code> server behind proxy will check if <code>MOVE</code> method&rsquo;s query string <code>Destination</code> is match the proxyed <code>Host</code>. To avoid error, delete or comment the <code>proxy_set_header host $http_host</code> in <code>location /S4f_/ {..}</code>.</p><p>Generate your <code>conf/userpass.txt</code> file by command <code>htpasswd</code> or online <code>MD5 htpasswd</code> generator. Text inside are like <code>share:$apr1$AOW5qtOx$7D3rsVK/jIQuQYqd11/Xg0</code>.
+Add those lines in your <code>nginx.conf</code> <code>server</code> section.
+<code>nginx auth_basic "Auth"; auth_basic_user_file userpass.txt;</code></p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>Changing the config of Guacamole is now in its GUI control panel instead of in its config file.</p></blockquote><a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:2 role=doc-endnote><blockquote><p><strong>Failed</strong><br>Failed on <code>COPY root /</code>.</p></blockquote><a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:3 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>Use nginx reverse proxy instead because ARR&rsquo;s lack of Websocket support.</p></blockquote><a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:4 role=doc-endnote><blockquote><p><strong>Deprecated</strong><br>The hostname that Hyper-v provided is not stable. It&rsquo;s better set static ip both manually.</p></blockquote><a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:5 role=doc-endnote><blockquote><p><strong>Important</strong><br>There is a <strong>bug</strong> when Nginx handle reverse proxy to a webdav server. Related <a href=https://serverfault.com/questions/121766/webdav-rename-fails-on-an-apache-mod-dav-install-behind-nginx>discussion</a> and <a href=https://github.com/keeweb/keeweb/issues/1326>webdav path requirement</a>.</p></blockquote><a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li><li id=fn:6 role=doc-endnote><blockquote><p><strong>Optional</strong><br>Set basic auth for Nginx.</p></blockquote><a href=#fnref:6 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></li></ol></section></p></article><script src=/qrious.min.js></script><script>hasQr=false;function showQr(on){if(on&&!hasQr){(function(){var qr=new QRious({element:document.getElementById('qr'),value:window.location.href});})();hasQr=true;}
 document.getElementById('qr').style.display=on?"block":"none";}</script><div class=markdown><blockquote class="book-hint danger" style=margin-top:2rem onmouseover=showQr(true) onmouseout=showQr(false)><canvas id=qr style=position:absolute;right:1rem></canvas>
-<small><p class=copyright-item><b>调查员：</b>S</p><p>创建时间：2020年07月13日 - 18时49分</p><p>最后修改：2021年02月19日 - 22时56分</p><p class=copyright-item><b>区域（二维码）：</b>
+<small><p class=copyright-item><b>调查员：</b>S</p><p>创建时间：2020年07月13日 - 18时49分</p><p>最后修改：2021年02月28日 - 23时50分</p><p class=copyright-item><b>区域（二维码）：</b>
 <a title=返回顶部 href=https://const.icu/posts/docker-guacamole-rdp/#>https://const.icu/posts/docker-guacamole-rdp/↩︎</a></p><b><p class="copyright-item lincese">采用<a rel=license href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh target=_blank>知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可</p></b></small></blockquote></div><footer class=book-footer><div class="flex flex-wrap justify-between"></div></footer><div class=book-comments><span id=/posts/docker-guacamole-rdp/ class=leancloud_visitors data-flag-title="提升安全性：Nginx 反向代理 RDP 和 IIS 服务"><small><details class=post-meta-item-text><summary>时空乱流记录</summary>
 <a href=https://console.leancloud.app/ target=_blank><img src=/90cf159733e558137ed20aa04d09964436f618a1.png style=max-width:27px><small> <span class=leancloud-visitors-count></span>+</small></a></details></small></span><br><div id=vcomments></div><script src=/av-min.js></script><script src=/Valine.min.js></script><script type=text/javascript>setTimeout(function VInit(){new Valine({el:'#vcomments',appId:'O8B7EmkI0g7b1RzB4FtJrXvl-MdYXbMMI',appKey:'KM4TV4SUH6qzz8sN8JWU9tKL',avatar:'retro',placeholder:'支持Markdown语法 つω⊂',recordIP:true,visitor:true,requiredFields:["mail"],meta:["nick","mail"],emojiCDN:'//i0.hdslb.com/bfs/emote/',emojiMaps:{"tv_doge":"6ea59c827c414b4a2955fe79e0f6fd3dcd515e24.png","tv_亲亲":"a8111ad55953ef5e3be3327ef94eb4a39d535d06.png","tv_偷笑":"bb690d4107620f1c15cff29509db529a73aee261.png","tv_再见":"180129b8ea851044ce71caf55cc8ce44bd4a4fc8.png","tv_冷漠":"b9cbc755c2b3ee43be07ca13de84e5b699a3f101.png","tv_发怒":"34ba3cd204d5b05fec70ce08fa9fa0dd612409ff.png","tv_发财":"34db290afd2963723c6eb3c4560667db7253a21a.png","tv_可爱":"9e55fd9b500ac4b96613539f1ce2f9499e314ed9.png","tv_吐血":"09dd16a7aa59b77baa1155d47484409624470c77.png","tv_呆":"fe1179ebaa191569b0d31cecafe7a2cd1c951c9d.png","tv_呕吐":"9f996894a39e282ccf5e66856af49483f81870f3.png","tv_困":"241ee304e44c0af029adceb294399391e4737ef2.png","tv_坏笑":"1f0b87f731a671079842116e0991c91c2c88645a.png","tv_大佬":"093c1e2c490161aca397afc45573c877cdead616.png","tv_大哭":"23269aeb35f99daee28dda129676f6e9ea87934f.png","tv_委屈":"d04dba7b5465779e9755d2ab6f0a897b9b33bb77.png","tv_害羞":"a37683fb5642fa3ddfc7f4e5525fd13e42a2bdb1.png","tv_尴尬":"7cfa62dafc59798a3d3fb262d421eeeff166cfa4.png","tv_微笑":"70dc5c7b56f93eb61bddba11e28fb1d18fddcd4c.png","tv_思考":"90cf159733e558137ed20aa04d09964436f618a1.png","tv_惊吓":"0d15c7e2ee58e935adc6a7193ee042388adc22af.png","雪未来-太棒了":"d03c1d062bb4f346c1041ca60bc763d404ddbd56.png","雪未来-摸头":"c7389d48b89699ecfeec373f90c8c26ea6d3496b.png","雪未来-击掌":"bd257c4ce22fca6a810c74873e90b343ddcead68.png","雪未来-等一等":"16e50092a82375171513018f372ed72377fcd979.png","雪未来-忽然出现":"02ba37478cdb287f40b2a328c5755873937cc417.png","雪未来-喝奶茶":"7847100be4de8cb3bf25825af165bed4f0668084.png","雪未来-冲呀":"d5a14055c8b4b457d7d815c79e7e4180299b375d.png","雪未来-下雪了":"12d2ef42e75d2806bb8a071476e825c58e797f1a.png","雪未来-堆雪人":"b2ee932586ee69f1a5ba69676f5fd345b4cd069a.png","雪未来-赖床":"239d2acb5dc2b96ec98af1ba1a81f49c8b211cd4.png","雪未来-忍住不笑":"852cc4cc73caa982b07bcbe48683d20be6c8df61.png","雪未来-打气":"1eafe084dccb3c8afff05b21d302e40e06dd07dd.png","雪未来-叹气":"a515cd6aa54093c1ccb364f22360620e2d5d76cb.png","雪未来-给你惊喜":"0b552c42157aef2002f8e9c05b06939ac3226127.png","雪未来-生气":"27e30065621ff3c981102b60865872d1be40fcd7.png","雪未来-早安":"7d941da6f69bf256b71b2f4c813c9e15bc6f89fa.png","雪未来-挠头":"6c5f3b58a568185b9844e902c632ee5cf362170d.png","雪未来-嘿嘿":"7bee0f7af3eef454f9107e883b1c5988fada42a5.png","雪未来-唱歌":"1ac8692986fc4e3d271fa14289f99d5d11dee54d.png","雪未来-泪目":"7d721758533a060933d6cef176012bf15f0fba81.png",}});},1000);</script></div><label for=menu-control class="hidden book-menu-overlay"></label></div><script src=/clipboard.min.js></script><script>(function(){function addCopy(element){var copy=document.createElement("div");copy.className="copy-btn";copy.textContent="复制";element.prepend(copy);}
 var codes=document.querySelectorAll('pre > code');for(var i=0,len=codes.length;i<len;i++)
